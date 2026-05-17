@@ -2,3 +2,4 @@ node_modules/
 dist/
 .env
 ref/
+minddiff/logs/
