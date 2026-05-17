@@ -1,0 +1,20 @@
+{
+  "name": "minddiff",
+  "version": "1.0.0",
+  "description": "> Preserving cognitive traces alongside repository evolution.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/justsourish/minddiff/issues"
+  },
+  "homepage": "https://github.com/justsourish/minddiff#readme",
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
