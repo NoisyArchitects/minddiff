@@ -12,6 +12,6 @@ chmod +x node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper
 ```
 
 ## Architecture
-- **Local-first:** Logs are stored in `./minddiff/logs/`.
+- **Local-first:** Logs are stored in `.minddiff/sessions/`.
 - **Append-only:** Output is captured exactly as received from the PTY, including ANSI escape codes.
 - **Minimal Dependencies:** Avoid adding heavy libraries for stream processing unless absolutely necessary.

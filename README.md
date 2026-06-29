@@ -39,7 +39,7 @@ Originally conceptualized as a static logging system, MindDiff has evolved into 
 MindDiff does not generate intelligence, replace your IDE, or act as an agent framework. It simply captures, timestamps, attaches context, and preserves existing reasoning traces.
 
 Crucially, these logs evolve *with* the repository:
-- Logs live inside the repository (`/minddiff/logs`).
+- Logs live inside the repository (`.minddiff/sessions/`).
 - Logs are committed with code.
 - Branches naturally fork cognition.
 - Merges naturally merge cognition.
@@ -55,10 +55,11 @@ MindDiff operates by wrapping AI CLI tools (like Gemini CLI) in a pseudo-termina
 
 ## How It Currently Works
 
-1. **Launch:** Instead of running your AI CLI directly, you run it through MindDiff.
-2. **Passthrough:** MindDiff allocates a PTY, spawns the target CLI, and pipes your input and its output transparently. You interact with the AI exactly as you normally would.
-3. **Interception:** As the session progresses, MindDiff tees the raw PTY stream to a timestamped, append-only log file in the local `./minddiff/logs/` directory.
-4. **Observation:** A separate terminal can tail this stream using the `watch` command, allowing developers to observe the AI's cognitive process in real time.
+1. **Initialization:** Run `minddiff init` to set up `.minddiff` and configure the Git post-commit hook.
+2. **Launch:** Run your AI CLI agent wrapped under MindDiff (e.g. `minddiff run gemini` or `minddiff run claude`).
+3. **Passthrough:** MindDiff allocates a PTY, spawns the target agent CLI, and pipes your input and its output transparently. You interact with the AI exactly as you normally would.
+4. **Interception:** As the session progresses, MindDiff tees the raw PTY stream to a timestamped, append-only log file in the `.minddiff/sessions/` directory.
+5. **Observation:** A separate terminal can tail this stream using the `watch` command, allowing developers to observe the AI's cognitive process in real time.
 
 ## Example Workflow
 
@@ -66,7 +67,7 @@ The architecture enables a powerful separation of concerns during complex engine
 
 ```bash
 # Terminal 1 (The Driver): Start an active AI engineering session
-npm run dev -- gemini
+npm run dev -- run gemini
 
 # Terminal 2 (The Observer): Passively watch the cognition stream evolve
 npm run dev -- watch
@@ -76,7 +77,9 @@ In this setup, Terminal 1 drives the active session, while Terminal 2 passively 
 
 ## Current Commands
 
-- `minddiff <command>`: Wraps the given CLI command in a PTY, intercepting and logging the session to `./minddiff/logs/`.
+- `minddiff init`: Initializes the `.minddiff` database and configures Git post-commit hooks.
+- `minddiff run <agent> [args]`: Wraps the given CLI agent in a PTY, intercepting and logging the session to `.minddiff/sessions/`.
+- `minddiff sync`: Synchronizes any pending commits with active sessions (automated via post-commit hooks).
 - `minddiff watch`: Tails the most recent log file in the repository, rendering the raw PTY stream (including ANSI escape codes) for live observability.
 
 ## PTY, Watch, and Terminal Reality

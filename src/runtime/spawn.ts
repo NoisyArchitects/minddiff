@@ -82,6 +82,9 @@ export function spawnWrapper(command: string, args: string[], logStream: WriteSt
         if (process.stdin.setRawMode) {
           process.stdin.setRawMode(isRaw);
         }
+        try {
+          process.stdin.pause();
+        } catch {}
         
         logStream.end();
         resolve(exitCode);

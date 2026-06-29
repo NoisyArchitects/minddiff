@@ -1,11 +1,11 @@
 import { spawn } from 'node:child_process';
-import { getLatestLogFile } from '../storage/logs';
+import { getLatestLogFile } from '../storage/db.js';
 
 export function watchCommand() {
   const latestLog = getLatestLogFile();
   
   if (!latestLog) {
-    console.error('No logs found. Run "minddiff gemini" first.');
+    console.error('No logs found. Run a session first (e.g., "minddiff run gemini").');
     process.exit(1);
   }
 

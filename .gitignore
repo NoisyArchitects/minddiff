@@ -2,4 +2,5 @@ node_modules/
 dist/
 .env
 ref/
-minddiff/logs/
+.minddiff/state.json
+.minddiff/state.json.lock
