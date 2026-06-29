@@ -1,6 +1,6 @@
 {
   "name": "minddiff",
-  "version": "1.0.1-alpha.1",
+  "version": "1.0.1-alpha.2",
   "description": "> Preserving cognitive traces alongside repository evolution.",
   "main": "dist/cli.js",
   "bin": {
