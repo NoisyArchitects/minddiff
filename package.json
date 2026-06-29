@@ -17,10 +17,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "node scripts/postinstall.js"
   },
-  "bugs": {
-    "url": "https://github.com/justsourish/minddiff/issues"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NoisyArchitects/minddiff.git"
   },
-  "homepage": "https://github.com/justsourish/minddiff#readme",
+  "bugs": {
+    "url": "https://github.com/NoisyArchitects/minddiff/issues"
+  },
+  "homepage": "https://github.com/NoisyArchitects/minddiff#readme",
   "devDependencies": {
     "@types/node": "^25.8.0",
     "ts-node": "^10.9.2",
