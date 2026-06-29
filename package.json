@@ -7,13 +7,15 @@
     "minddiff": "dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "scripts"
   ],
   "scripts": {
     "dev": "tsx src/cli.ts",
     "build": "tsc",
     "prepublishOnly": "npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "node scripts/postinstall.js"
   },
   "bugs": {
     "url": "https://github.com/justsourish/minddiff/issues"

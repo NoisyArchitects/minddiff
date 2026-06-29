@@ -1,7 +1,43 @@
 import * as pty from 'node-pty';
 import { WriteStream } from 'node:fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
+
+function ensureSpawnHelperPermissions() {
+  try {
+    const ptyPath = require.resolve('node-pty');
+    const ptyRoot = path.dirname(path.dirname(ptyPath));
+    const helperPaths = [
+      path.join(ptyRoot, 'build', 'Release', 'spawn-helper'),
+      path.join(ptyRoot, 'build', 'Debug', 'spawn-helper'),
+      path.join(ptyRoot, 'prebuilds', `${process.platform}-${process.arch}`, 'spawn-helper')
+    ];
+
+    for (const p of helperPaths) {
+      if (fs.existsSync(p)) {
+        try {
+          fs.accessSync(p, fs.constants.X_OK);
+        } catch {
+          // Not executable, attempt self-healing
+          try {
+            fs.chmodSync(p, 0o755);
+          } catch (chmodErr: any) {
+            console.error(`
+[MindDiff Error] The node-pty spawn-helper binary lacks execution permissions and self-healing failed.
+Please run the following command to fix this manually:
+  sudo chmod +x ${p}
+`);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    // Suppress package resolution/access errors
+  }
+}
 
 export function spawnWrapper(command: string, args: string[], logStream: WriteStream): Promise<number> {
+  ensureSpawnHelperPermissions();
   return new Promise((resolve, reject) => {
     try {
       // Create the pseudo-terminal
