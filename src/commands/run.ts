@@ -3,6 +3,7 @@ import { getDbDirectory, createSession, addActiveSession, updateSessionRunningSt
 import { createLogStream } from '../runtime/stream.js';
 import { getAgent } from '../runtime/agent.js';
 import { syncCommits, isGitRepository } from '../storage/git.js';
+import { compileSession } from '../compiler/pipeline.js';
 
 export async function runCommand(agentName: string, args: string[]): Promise<number> {
   const dbDir = getDbDirectory();
@@ -31,6 +32,13 @@ export async function runCommand(agentName: string, args: string[]): Promise<num
     // Toggle running status to false upon exit
     updateSessionRunningStatus(sessionId, false);
 
+    // Compile session logs into memory.json
+    try {
+      await compileSession(sessionId);
+    } catch (compileErr: any) {
+      console.error(`MindDiff Memory Compilation Failed: ${compileErr.message}`);
+    }
+
     // Sync any commits made during the session immediately
     syncCommits();
 
@@ -42,6 +50,14 @@ export async function runCommand(agentName: string, args: string[]): Promise<num
   } catch (err: any) {
     console.error(`MindDiff Error while running agent ${agentName}:`, err.message);
     updateSessionRunningStatus(sessionId, false);
+
+    // Attempt memory compilation even on failure to preserve raw.log history
+    try {
+      await compileSession(sessionId);
+    } catch (compileErr: any) {
+      console.error(`MindDiff Memory Compilation Failed: ${compileErr.message}`);
+    }
+
     if (!isGitRepository()) {
       removeActiveSession(sessionId);
     }

@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
+import { MemoryLedger, MemoryBlock } from '../compiler/types.js';
 
 export interface SessionMetadata {
   id: string;
@@ -210,3 +211,110 @@ export function getLatestLogFile(): string | null {
 
   return files.length > 0 ? files[0].path : null;
 }
+
+export function getAllSessions(): SessionMetadata[] {
+  ensureDatabaseStructure();
+  const sessionsDir = join(getDbDirectory(), 'sessions');
+  if (!existsSync(sessionsDir)) return [];
+
+  const files = readdirSync(sessionsDir);
+  const sessions: SessionMetadata[] = [];
+
+  for (const file of files) {
+    if (file.startsWith('session-') && file.endsWith('.json') && !file.endsWith('.memory.json')) {
+      try {
+        const filePath = join(sessionsDir, file);
+        const data = readFileSync(filePath, 'utf8');
+        const meta = JSON.parse(data) as SessionMetadata;
+        sessions.push(meta);
+      } catch (err) {
+        // Skip malformed session files
+      }
+    }
+  }
+
+  return sessions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export function getSession(sessionId: string): SessionMetadata | null {
+  ensureDatabaseStructure();
+  const metadataPath = join(getDbDirectory(), 'sessions', `${sessionId}.json`);
+  if (!existsSync(metadataPath)) return null;
+
+  try {
+    const data = readFileSync(metadataPath, 'utf8');
+    return JSON.parse(data) as SessionMetadata;
+  } catch {
+    return null;
+  }
+}
+
+export function getSessionMemory(sessionId: string): MemoryLedger | null {
+  ensureDatabaseStructure();
+  const memoryPath = join(getDbDirectory(), 'sessions', `${sessionId}.memory.json`);
+  if (!existsSync(memoryPath)) return null;
+
+  try {
+    const data = readFileSync(memoryPath, 'utf8');
+    return JSON.parse(data) as MemoryLedger;
+  } catch {
+    return null;
+  }
+}
+
+export function getSessionRawLog(sessionId: string): string | null {
+  ensureDatabaseStructure();
+  const logPath = join(getDbDirectory(), 'sessions', `${sessionId}.log`);
+  if (!existsSync(logPath)) return null;
+
+  try {
+    return readFileSync(logPath, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+export function getCommitMetadata(sha: string): CommitMetadata | null {
+  ensureDatabaseStructure();
+  const commitDir = join(getDbDirectory(), 'commits');
+  
+  let targetSha = sha;
+  if (sha.length < 40) {
+    if (existsSync(commitDir)) {
+      const files = readdirSync(commitDir);
+      const match = files.find(f => f.startsWith(sha) && f.endsWith('.json'));
+      if (match) {
+        targetSha = match.replace('.json', '');
+      }
+    }
+  }
+
+  const commitPath = join(commitDir, `${targetSha}.json`);
+  if (!existsSync(commitPath)) return null;
+
+  try {
+    const data = readFileSync(commitPath, 'utf8');
+    return JSON.parse(data) as CommitMetadata;
+  } catch {
+    return null;
+  }
+}
+
+export function getAllMemories(tag?: string): (MemoryBlock & { sessionId: string })[] {
+  const sessions = getAllSessions();
+  const allMems: (MemoryBlock & { sessionId: string })[] = [];
+
+  for (const session of sessions) {
+    const ledger = getSessionMemory(session.id);
+    if (ledger && ledger.memories) {
+      for (const mem of ledger.memories) {
+        if (!tag || mem.inferred.tags.some(t => t.name.toLowerCase() === tag.toLowerCase())) {
+          allMems.push({ ...mem, sessionId: session.id });
+        }
+      }
+    }
+  }
+
+  return allMems.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+}
+

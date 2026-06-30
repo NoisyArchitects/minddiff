@@ -135,3 +135,13 @@ export function syncCommits(): void {
     }
   }
 }
+
+export function hasUncommittedChanges(): boolean {
+  try {
+    const result = execSync('git status --porcelain', { stdio: 'pipe' });
+    return result.toString().trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
