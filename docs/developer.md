@@ -4,7 +4,30 @@ Welcome to the MindDiff contributor handbook. This guide covers how to set up, r
 
 ---
 
-## 1. Repository Setup & Bootstrapping
+## 1. Philosophy
+
+MindDiff exists because modern engineering has a continuity problem.
+
+AI tools have made **generation** dramatically faster, but human **comprehension** is still the bottleneck. Teams can create more code, more quickly, than they can later understand, debug, review, and safely extend.
+
+Git remains the canonical record of **what changed**, but Git alone does not preserve the **why** behind a change: the false starts, terminal output, linter constraints, debugging loops, and reasoning that produced the final diff.
+
+MindDiff's job is to preserve that missing continuity layer without fighting the existing Git workflow:
+
+- **Remember** the real terminal session accurately
+- **Understand** what mattered by compiling semantic memories and handoffs
+- **Continue** work later without reconstructing context from scratch
+
+As a contributor, that means changes should protect four project-level properties:
+
+- **Local-first storage** in `.minddiff/`
+- **Append-only capture fidelity** for recorded sessions
+- **Clear linkage to Git commits**
+- **Minimal dependency weight** around core stream processing
+
+---
+
+## 2. Repository Setup & Bootstrapping
 
 ### Step 1: Clone and Install Dependencies
 Clone the repository and install the development dependencies:
@@ -32,7 +55,7 @@ npm run dev -- init
 
 ---
 
-## 2. Daily Development Workflow
+## 3. Daily Development Workflow
 
 ### How to Run Commands in Development
 You can run any CLI command using `tsx` (without a manual rebuild step) via the `dev` script:
@@ -58,7 +81,7 @@ npm run dev -- watch
 
 ---
 
-## 3. Build & Test Process
+## 4. Build & Test Process
 
 ### Building the Project
 To compile the TypeScript source files (`src/`) into JavaScript executable files (`dist/`):
@@ -78,7 +101,7 @@ npm test
 
 ---
 
-## 4. Local CLI Binary Link / Unlink
+## 5. Local CLI Binary Link / Unlink
 
 To test command behaviors globally under development without affecting your main production installations, use the built-in development linking scripts.
 
@@ -99,7 +122,7 @@ npm run unlink-dev
 
 ---
 
-## 5. Release Candidate Validation & Packaging
+## 6. Release Candidate Validation & Packaging
 
 Before preparing a new release, you must package and validate release candidates.
 
@@ -108,7 +131,7 @@ To test the packaging process and verify what files will be included in the npm 
 ```bash
 npm pack
 ```
-This generates a `minddiff-1.1.0.tgz` file in the repository root.
+This generates a `minddiff-<version>.tgz` file in the repository root.
 
 ### Step 2: Validate the Tarball
 Create a clean directory outside the repository, install the tarball, and run verification:
@@ -116,13 +139,13 @@ Create a clean directory outside the repository, install the tarball, and run ve
 mkdir -p /tmp/minddiff-test
 cd /tmp/minddiff-test
 npm init -y
-npm install /path/to/minddiff-1.1.0.tgz
+npm install /path/to/minddiff-<version>.tgz
 npx minddiff --version
 ```
 
 ---
 
-## 6. Playground Workflow (UX Verification Strategy)
+## 7. Playground Workflow (UX Verification Strategy)
 
 To ensure the first-run experience, onboarding, and interactive command behaviors remain flawless and do not regress, maintainers should test against a dedicated playground setup.
 
@@ -161,10 +184,12 @@ playgrounds/
 
 ---
 
-## 7. Publishing Workflow
+## 8. Publishing Workflow
 
 Once validation passes:
 
 1. **Bump Version:** Update version in `package.json` and update `CHANGELOG.md`.
 2. **Build and Pack:** Run `npm run build` to compile the final distribution.
 3. **Publish:** Run `npm publish` (add `--tag next` for release candidates).
+
+**Important:** npm package metadata, including the published README, only updates when a new package version is published. Pushing README changes to GitHub alone does not refresh the npm package page.

@@ -2,152 +2,152 @@
 
 > Preserving cognitive traces alongside repository evolution.
 
-MindDiff is a **Developer Continuity Engine** designed to capture, structure, and preserve the reasoning context behind code changes. It acts as an observability layer, bridging the gap between code outcomes (Git commits) and the developer thoughts, debugging loops, and linter constraints that produced them.
+MindDiff is a **Developer Continuity Engine** for AI-assisted and terminal-heavy engineering workflows. It captures the session around a change, preserves the reasoning and constraints behind it, and links that context back to the Git history you already trust.
+
+MindDiff does **not** replace Git. Git remains the canonical record of code state. MindDiff adds the missing continuity layer: the prompts, failed attempts, debugging loops, tool output, and architectural reasoning that usually disappear once a commit lands.
 
 ---
 
-## Why MindDiff?
+## Why MindDiff exists
 
-### 1. Generation vs. Comprehension
-AI coding tools dramatically increase code creation speed. But human comprehension, memory, and reasoning continuity do not scale at the same rate. Developers remain responsible for understanding and maintaining systems weeks or months later. **Generation speed ≠ comprehension speed.**
+### 1. Generation is accelerating faster than comprehension
 
-### 2. Git Tracks the "What", MindDiff Tracks the "Why"
-Git is the canonical source of truth for code snapshots, chronology, and branching. However, Git only records the *outcome* of reasoning. The exploratory paths, failed compiler attempts, and architectural rationales are lost once the code is committed. MindDiff does not replace Git—it enriches it by attaching cognitive timelines directly to your repository's Git commits.
+AI tools have dramatically increased how fast code can be generated. Human understanding has not accelerated at the same rate. Teams still need to maintain, debug, review, and extend systems long after the original session is over.
 
----
+**Generation speed != comprehension speed.**
 
-## Twin Workflows
+### 2. Git alone is insufficient for engineering memory
 
-MindDiff is designed to fit your preferred workflow:
+Git is excellent at preserving **what changed**: snapshots, chronology, diffs, merges, and branches.
 
-1. **Interactive Launcher (Recommended)**
-   Simply run:
-   ```bash
-   minddiff
-   ```
-   Open a keyboard-navigated dashboard to launch commands, browse session history, read guides, and explore references directly.
+But Git only stores the **outcome** of reasoning. It usually loses:
 
-2. **Direct CLI**
-   Run commands directly for speed or CI scripting:
-   ```bash
-   minddiff history
-   # or
-   minddiff commit <sha>
-   ```
+- the exploratory paths that did not work
+- the linter or compiler constraints that shaped the final solution
+- the intent behind a refactor
+- the reasoning thread connecting multiple commits in one session
+
+MindDiff complements Git by attaching those cognitive traces to the repository's actual evolution.
+
+### 3. The product promise: Remember. Understand. Continue.
+
+- **Remember accurately** with high-fidelity PTY capture and transcript reconstruction
+- **Understand what mattered** by compiling logs into semantic memories, episodes, and handoffs
+- **Continue without reloading everything** by revisiting a session, a commit, or the latest continuity state
 
 ---
 
-## Core Workflow
+## What MindDiff gives you
 
-Using MindDiff is simple and requires zero change to your daily Git commands:
+- **Captured sessions** for AI agents or arbitrary CLI workflows
+- **Commit-linked context** so `minddiff commit <sha>` can explain why a change happened
+- **Narrative session views** that group low-level terminal activity into meaningful goal episodes
+- **Compiled memories and handoffs** for resuming work without starting from zero
+- **Local-first project history** stored inside `.minddiff/`
+
+---
+
+## Getting started
+
+### Install
 
 ```bash
-# Step 1: Initialize MindDiff in your project root (installs Git hooks)
+npm install -g minddiff
+```
+
+### Quick start
+
+```bash
+# 1. Initialize MindDiff in your repository
 minddiff init
 
-# Step 2: Start an active engineering session under capture
-minddiff run gemini  # (or claude, aider, or npm test)
+# 2. Start a captured engineering session
+minddiff run gemini
 
-# Step 3: Write code, run tests, and commit normally
+# 3. Work and commit normally
 git commit -m "Refactor parser logic"
 
-# Step 4: Revisit the context behind the commit later
+# 4. Revisit the reasoning behind that commit
 minddiff commit HEAD
 ```
 
+If you prefer a guided experience, run `minddiff` with no arguments to open the interactive terminal dashboard.
+
 ---
 
-## Command Reference
+## Two ways to work
 
-### `minddiff`
-Opens the interactive terminal launcher dashboard (Commands, Tutorials, Help, and About tabs). Fallbacks to static help in non-interactive (non-TTY) shells.
+### Interactive launcher
+
 ```bash
 minddiff
 ```
 
-### `minddiff init`
-Initializes the workspace database under `.minddiff/` and registers standard Git commit hooks.
+Open a keyboard-driven terminal dashboard to launch commands, browse history, read help, and explore project context interactively.
+
+### Direct CLI
+
 ```bash
-minddiff init
+minddiff history
+minddiff commit <sha>
 ```
 
-### `minddiff run <agent> [args...]`
-Spawns a captured terminal wrapper wrapping the target agent or CLI command.
+Use direct commands when you want speed, scripts, or a more traditional CLI workflow.
+
+---
+
+## Core commands
+
+| Command | Purpose |
+| --- | --- |
+| `minddiff` | Open the interactive launcher dashboard |
+| `minddiff init` | Initialize `.minddiff/` and install Git hooks |
+| `minddiff run <agent> [args...]` | Capture an agent or arbitrary CLI command in a PTY session |
+| `minddiff status` | Show active sessions and process details |
+| `minddiff watch` | Tail the active session's live output |
+| `minddiff history` | Browse recorded sessions |
+| `minddiff view <session-id>` | Read the narrative story of a session |
+| `minddiff log <session-id>` | Print the reconstructed clean transcript |
+| `minddiff commit <sha>` | Explain why a commit happened |
+| `minddiff memories [--tag <tag>]` | Browse compiled memories across sessions |
+| `minddiff sync` | Synchronize commits with recorded sessions |
+| `minddiff help [command]` | Show manuals and command-specific help |
+
+### Examples
+
 ```bash
 minddiff run gemini
 minddiff run npm test
-```
-
-### `minddiff status`
-Displays active capture sessions and process details.
-```bash
-minddiff status
-```
-
-### `minddiff watch`
-Tails the live stdout log stream of the currently active capturing session.
-```bash
-minddiff watch
-```
-
-### `minddiff history`
-Lists all previously recorded developer sessions in reverse chronological order.
-```bash
-minddiff history
-```
-
-### `minddiff view <session-id>`
-View details of a compiled developer session. Defaults to the **Narrative Story** layout which groups terminal steps into logical goal episodes.
-```bash
 minddiff view session-2026-06-30-qqc5
-minddiff view session-2026-06-30-qqc5 --raw   # Dumps flat MemoryBlock records
-minddiff view session-2026-06-30-qqc5 --json  # Dumps raw database JSON
-```
-
-### `minddiff log <session-id>`
-Prints the reconstructed, fully-cleaned, raw text log of a session (ANSI styling and carriage returns resolved).
-```bash
+minddiff view session-2026-06-30-qqc5 --raw
+minddiff view session-2026-06-30-qqc5 --json
 minddiff log session-2026-06-30-qqc5
-```
-
-### `minddiff commit <commit-sha>`
-Explains why a Git commit happened by checking its linked sessions, linter constraints, and developer goals.
-```bash
-minddiff commit e8a12f9
-```
-
-### `minddiff memories`
-Browses a consolidated chronological timeline of all compiled developer facts and tag tags.
-```bash
-minddiff memories
 minddiff memories --tag debugging
 ```
 
-### `minddiff sync`
-Manually scans and synchronizes offline Git commits with recorded sessions.
-```bash
-minddiff sync
-```
+---
 
-### `minddiff help [command]`
-Displays the main help documentation or command-specific manuals.
-```bash
-minddiff help
-minddiff help run
-```
+## How it fits with Git
+
+MindDiff treats Git as the canonical timeline of code changes and augments it with session continuity:
+
+- one session can span multiple commits
+- one commit can be linked back to the active session that produced it
+- post-commit synchronization keeps commit metadata and session metadata aligned
+
+That means your repository keeps its normal Git workflow while gaining an inspectable memory layer.
 
 ---
 
-## Project Links
+## Documentation
 
-* **Project Homepage**: [noisyarchitects.org/projects/minddiff](https://noisyarchitects.org/projects/minddiff)
-* **npm Registry**: [npmjs.com/package/minddiff](https://www.npmjs.com/package/minddiff)
-* **GitHub Repository**: [github.com/NoisyArchitects/minddiff](https://github.com/NoisyArchitects/minddiff)
+- **Contributor & Maintainer Handbook**: [`docs/developer.md`](./docs/developer.md)
+- **Architecture Guide**: [`docs/architecture.md`](./docs/architecture.md)
 
 ---
 
-## Contributing & Development
+## Project links
 
-We welcome contributions! To set up, compile, and run MindDiff locally in development mode, please read our contributor guide:
-
-👉 [docs/local-development.md](file:///Users/rish/Desktop/DEV/NoisyArchitects/minddiff/docs/local-development.md)
+- **Project Homepage**: [noisyarchitects.org/projects/minddiff](https://noisyarchitects.org/projects/minddiff)
+- **npm Registry**: [npmjs.com/package/minddiff](https://www.npmjs.com/package/minddiff)
+- **GitHub Repository**: [github.com/NoisyArchitects/minddiff](https://github.com/NoisyArchitects/minddiff)
