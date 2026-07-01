@@ -13,16 +13,19 @@ export async function runCommand(agentName?: string, args: string[] = []): Promi
   // 1. Git Repository Check
   if (!isGitRepository()) {
     if (process.stdout.isTTY && process.stdin.isTTY) {
-      console.log(theme.warning('\n⚠️ Not inside a Git repository.'));
+      console.log(theme.warning('\n⚠️ Git repository not found.'));
+      console.log('MindDiff preserves your engineering memory and goals alongside your commit history.');
+      console.log('Without Git, commit-linked features and automated memory sync will be disabled.\n');
+      
       const choice = await selectPrompt(
-        'MindDiff works best alongside Git because it preserves engineering memory together with commit history.\nChoose:',
+        'How would you like to proceed?',
         ['Initialize Git', 'Continue without Git', 'Cancel']
       );
       
       if (choice === 0) {
         try {
           execSync('git init', { stdio: 'inherit' });
-          console.log(theme.success('✓ Initialized empty Git repository.\n'));
+          console.log(theme.success('\n✓ Initialized empty Git repository.\n'));
         } catch (err: any) {
           console.error(theme.warning(`Failed to initialize Git: ${err.message}`));
           console.log('Continuing without Git...\n');
@@ -42,13 +45,15 @@ export async function runCommand(agentName?: string, args: string[] = []): Promi
   const dbDir = getDbDirectory();
   if (!existsSync(dbDir)) {
     if (process.stdout.isTTY && process.stdin.isTTY) {
-      console.log(theme.warning('\n⚠️ MindDiff database structure (.minddiff) not found.'));
+      console.log(theme.warning('\n⚠️ MindDiff is not initialized in this project.'));
       const choice = await selectPrompt(
-        'MindDiff needs to initialize this project before capturing sessions.\nInitialize now?',
-        ['Initialize', 'Cancel']
+        'Would you like to initialize MindDiff automatically now?',
+        ['Initialize MindDiff', 'Cancel']
       );
       if (choice === 0) {
+        console.log('');
         initCommand();
+        console.log('');
       } else {
         console.log('Aborted.');
         return 0;

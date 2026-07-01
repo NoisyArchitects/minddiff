@@ -115,7 +115,7 @@ function render() {
         let labelText = opt.label;
         if (opt.id !== 'custom') {
           if (opt.isInstalled) {
-            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.success(opt.label);
+            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : opt.label;
           } else {
             labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.dim(opt.label);
           }
@@ -175,7 +175,7 @@ function render() {
     output += '  Preserving developer continuity alongside repository evolution.\n';
     output += '  MindDiff models thoughts, tool calls, and actions as Semantic Episodes\n';
     output += '  to explain the "Why" behind code commits.\n\n';
-    output += `  ${theme.dim('Version:      1.1.0')}\n`;
+    output += `  ${theme.dim('Version:      1.1.1')}\n`;
     output += `  ${theme.dim('License:      MIT')}\n`;
   }
 

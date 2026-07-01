@@ -28,8 +28,29 @@ export async function viewCommand(sessionId?: string, options: { raw?: boolean; 
       }
       targetSessionId = sessions[choice].id;
     } else {
-      console.error(theme.warning('Usage: minddiff view <session-id> [--raw] [--json]'));
-      process.exit(1);
+      console.log(theme.bold('\nMindDiff Session Viewer'));
+      console.log(theme.dim('==================================='));
+      console.log('View the semantic goal episodes and cognitive timeline of a captured developer session.');
+      console.log('\nUsage:');
+      console.log('  minddiff view <session-id> [--raw] [--json]');
+      console.log('\nOptions:');
+      console.log('  --raw      Print flat, chronological memory blocks');
+      console.log('  --json     Output raw compiled database JSON structure');
+      console.log('\nExamples:');
+      console.log('  minddiff view session-1234');
+      console.log('  minddiff view session-1234 --raw');
+      
+      const sessions = getAllSessions();
+      if (sessions.length > 0) {
+        console.log('\nAvailable sessions:');
+        sessions.slice(0, 5).forEach(s => {
+          console.log(`  - ${s.id} (Agent: ${s.agent})`);
+        });
+      } else {
+        console.log('\nNo sessions recorded yet. Start one with "minddiff run".');
+      }
+      console.log('');
+      process.exit(0);
     }
   }
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import * as readline from 'node:readline';
 import { geminiCommand } from './commands/gemini.js';
 import { watchCommand } from './commands/watch.js';
@@ -66,6 +67,9 @@ const COMMAND_DOCS: Record<string, string> = {
   ${theme.bold('Usage')}
     $ minddiff init
 
+  ${theme.bold('Example')}
+    $ minddiff init
+
   ${theme.bold('What Happens Next')}
     MindDiff creates the .minddiff/ database structure and installs post-commit
     hooks in your .git/ directory. Future commits will be automatically indexed.
@@ -80,9 +84,10 @@ const COMMAND_DOCS: Record<string, string> = {
     Launch an AI agent or direct terminal command wrapper under capture.
 
   ${theme.bold('Usage')}
-    $ minddiff run claude
+    $ minddiff run [agent] [args...]
+
+  ${theme.bold('Example')}
     $ minddiff run gemini
-    $ minddiff run                (Opens interactive agent picker)
 
   ${theme.bold('What Happens Next')}
     MindDiff launches the target command inside a pseudo-terminal wrapper,
@@ -101,6 +106,13 @@ const COMMAND_DOCS: Record<string, string> = {
   ${theme.bold('Usage')}
     $ minddiff status
 
+  ${theme.bold('Example')}
+    $ minddiff status
+
+  ${theme.bold('What Happens Next')}
+    Prints active session IDs and their process IDs, along with a summary timeline of the
+    most recent captured sessions.
+
   ${theme.bold('Related Commands')}
     watch, history
   `,
@@ -112,6 +124,12 @@ const COMMAND_DOCS: Record<string, string> = {
 
   ${theme.bold('Usage')}
     $ minddiff watch
+
+  ${theme.bold('Example')}
+    $ minddiff watch
+
+  ${theme.bold('What Happens Next')}
+    Continuously reads and prints the live logs output by the active agent session in real time.
 
   ${theme.bold('Related Commands')}
     status, log
@@ -125,6 +143,13 @@ const COMMAND_DOCS: Record<string, string> = {
   ${theme.bold('Usage')}
     $ minddiff history
 
+  ${theme.bold('Example')}
+    $ minddiff history
+
+  ${theme.bold('What Happens Next')}
+    Shows a list of all captured sessions on disk, sorted by timestamp, showing their session IDs,
+    agents, and creation dates.
+
   ${theme.bold('Related Commands')}
     view, log, commit
   `,
@@ -135,13 +160,14 @@ const COMMAND_DOCS: Record<string, string> = {
     Display the semantic goal episodes projected from a session log.
 
   ${theme.bold('Usage')}
-    $ minddiff view               (Opens interactive session picker)
-    $ minddiff view session-1234
-    $ minddiff view session-1234 --raw
+    $ minddiff view [session-id] [--raw] [--json]
 
-  ${theme.bold('Options')}
-    --raw      Print flat, chronological memory blocks
-    --json     Output raw compiled database JSON structure
+  ${theme.bold('Example')}
+    $ minddiff view session-2026-07-01-12-00-ab12
+
+  ${theme.bold('What Happens Next')}
+    Parses the recorded thoughts and commands of the session into a narrative timeline,
+    outlining what goals were set, what actions were taken, and what outcomes were achieved.
 
   ${theme.bold('Related Commands')}
     history, log
@@ -153,11 +179,14 @@ const COMMAND_DOCS: Record<string, string> = {
     Print the reconstructed, cleaned text transcript of a session.
 
   ${theme.bold('Usage')}
-    $ minddiff log                (Opens interactive session picker)
-    $ minddiff log session-1234
+    $ minddiff log [session-id]
+
+  ${theme.bold('Example')}
+    $ minddiff log session-2026-07-01-12-00-ab12
 
   ${theme.bold('What Happens Next')}
-    Filters terminal control sequences and ANSI backspaces on the fly.
+    Extracts the raw terminal log, filters out ANSI control sequences and backspaces on the fly,
+    and prints a clean, human-readable transcript.
 
   ${theme.bold('Related Commands')}
     view, history
@@ -169,8 +198,14 @@ const COMMAND_DOCS: Record<string, string> = {
     Browse a consolidated timeline of all developer memories and inferred tags.
 
   ${theme.bold('Usage')}
-    $ minddiff memories
+    $ minddiff memories [--tag <tag>]
+
+  ${theme.bold('Example')}
     $ minddiff memories --tag debugging
+
+  ${theme.bold('What Happens Next')}
+    Collects all compiled session memories across the workspace and presents them in a single,
+    reverse-chronological feed, optionally filtered by semantic tags.
 
   ${theme.bold('Related Commands')}
     history, commit
@@ -182,8 +217,14 @@ const COMMAND_DOCS: Record<string, string> = {
     Explain why a Git commit happened by linking it to captured developer sessions.
 
   ${theme.bold('Usage')}
-    $ minddiff commit             (Opens interactive commit picker)
+    $ minddiff commit [sha]
+
+  ${theme.bold('Example')}
     $ minddiff commit a1b2c3d
+
+  ${theme.bold('What Happens Next')}
+    Resolves the commit metadata and links it to the active developer session running when
+    that commit was made, displaying the goals, thoughts, and terminal commands behind the commit.
 
   ${theme.bold('Related Commands')}
     history, memories
@@ -196,6 +237,13 @@ const COMMAND_DOCS: Record<string, string> = {
 
   ${theme.bold('Usage')}
     $ minddiff sync
+
+  ${theme.bold('Example')}
+    $ minddiff sync
+
+  ${theme.bold('What Happens Next')}
+    Scans the Git repository history for commits made during MindDiff sessions that haven't
+    been linked yet, writing commit metadata to the MindDiff database.
 
   ${theme.bold('Related Commands')}
     init, status
@@ -211,18 +259,26 @@ export function printDetailedHelp(subcommand?: string) {
   console.log(`
   ${theme.bold(theme.accent('MindDiff Manual'))}
 
-  MindDiff operates in two primary workflows:
+  MindDiff models thoughts, tool calls, and actions as Semantic Episodes
+  to preserve and explain the "Why" behind code commits.
 
-  1. ${theme.bold('Interactive Launcher')} (Recommended)
-     Simply run:
-       $ ${theme.highlight('minddiff')}
-     Browse commands, tutorials, and help using keyboard arrow keys.
+  ==============================================================================
+  THE MINDDIFF WORKFLOW
+  ==============================================================================
+  1. ${theme.bold('Launch Session Capture')}
+     Start an AI agent session or custom CLI command:
+       $ ${theme.highlight('minddiff run gemini')}
+       $ ${theme.highlight('minddiff run')}               (Opens interactive picker)
 
-  2. ${theme.bold('Direct CLI')}
-     Run commands directly for scripting or fast access:
-       $ ${theme.highlight('minddiff history')}
-       $ ${theme.highlight('minddiff view')}
-       $ ${theme.highlight('minddiff commit')}
+  2. ${theme.bold('Code & Commit')}
+     Use your standard Git workflow (e.g., git add, git commit). The Git hooks
+     installed by MindDiff automatically index and link commits to active sessions.
+
+  3. ${theme.bold('Explore Engineering Context')}
+     Retrieve goals and developer intent behind code changes:
+       $ ${theme.highlight('minddiff commit <sha>')}      Explain why a Git commit happened
+       $ ${theme.highlight('minddiff view <session>')}    View session narrative episodes
+       $ ${theme.highlight('minddiff log <session>')}     View clean plaintext session log
 
   ==============================================================================
   COMMAND REFERENCE
@@ -330,6 +386,15 @@ async function main() {
   const command = args[0];
   const remainingArgs = args.slice(1);
 
+  let version = '1.1.1';
+  try {
+    const pkgPath = join(__dirname, '..', 'package.json');
+    if (existsSync(pkgPath)) {
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+      version = pkg.version;
+    }
+  } catch {}
+
   if (!command) {
     if (process.stdout.isTTY && process.stdin.isTTY) {
       await homeCommand();
@@ -340,6 +405,19 @@ async function main() {
     }
   }
 
+  // Support standard version flags
+  if (command === '--version' || command === '-v') {
+    console.log(`${theme.accent('minddiff')} v${version}`);
+    process.exit(0);
+  }
+
+  // Intercept subcommand help requests
+  if (remainingArgs.includes('--help') || remainingArgs.includes('-h')) {
+    printDetailedHelp(command);
+    process.exit(0);
+  }
+
+  // Support standard help flags at root level
   if (command === 'help' || command === '--help' || command === '-h') {
     const subcommand = remainingArgs[0];
     printDetailedHelp(subcommand);

@@ -43,8 +43,36 @@ export async function commitCommand(sha?: string) {
       }
       targetSha = commits[choice].sha;
     } else {
-      console.error(theme.warning('Usage: minddiff commit <sha>'));
-      process.exit(1);
+      console.log(theme.bold('\nMindDiff Commit Explainer'));
+      console.log(theme.dim('==================================='));
+      console.log('Explain why a Git commit happened by linking it to captured developer sessions.');
+      console.log('\nUsage:');
+      console.log('  minddiff commit <sha>');
+      console.log('\nExamples:');
+      console.log('  minddiff commit a1b2c3d');
+      
+      const commitDir = join(getDbDirectory(), 'commits');
+      let commits: CommitMetadata[] = [];
+      if (existsSync(commitDir)) {
+        try {
+          const files = readdirSync(commitDir).filter(f => f.endsWith('.json'));
+          for (const file of files) {
+            const data = readFileSync(join(commitDir, file), 'utf8');
+            commits.push(JSON.parse(data) as CommitMetadata);
+          }
+          commits.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        } catch {}
+      }
+      if (commits.length > 0) {
+        console.log('\nAvailable commits:');
+        commits.slice(0, 5).forEach(c => {
+          console.log(`  - ${c.sha.substring(0, 7)}: ${c.message.split('\n')[0].trim()}`);
+        });
+      } else {
+        console.log('\nNo synced commits found in MindDiff. Sync them using "minddiff sync" or make commits during active sessions.');
+      }
+      console.log('');
+      process.exit(0);
     }
   }
 

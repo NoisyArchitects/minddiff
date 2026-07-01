@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-07-01
+
+### Added
+- **Git-First Onboarding**: Implemented Git detection, Git explanation, and automatic prompt to initialize Git when running in a fresh workspace without Git.
+- **Auto-Initialization**: Configured automatic `.minddiff` database setup, Git hooks installation, and agent picker startup immediately following Git initialization.
+- **Developer Handbook**: Created `docs/developer.md` detailing the codebase structure, developer workflows, testing instructions, and maintenance procedures.
+- **Maintainer Tooling**: Added a dynamic dev link manager (`scripts/link-dev.js` and `scripts/unlink-dev.js` exposed as `npm run link-dev` and `npm run unlink-dev`) to streamline local development testing.
+
+### Changed
+- **CLI Flags**: Standardized `-v` / `--version` and `-h` / `--help` flags at both the root level and within individual subcommands for better POSIX CLI standards.
+- **Visual Identity**: Transitioned the accent color from magenta to a warmer, highly readable cherry/crimson red (`\x1b[38;5;160m`) optimized for both light and dark terminals.
+- **UX Polish**: Cleaned up the agent picker in the home dashboard to render unselected installed agents in default terminal white instead of green, highlighting selections clearly.
+- **Version Banner**: Standardized version checking output to display the `minddiff` name in the new cherry red accent style.
+- **Interactive Prompts**: Refined prompts and messages to be more user-friendly and consistent across interactive prompts.
+
 ## [1.1.0] - 2026-07-01
 
 ### Added

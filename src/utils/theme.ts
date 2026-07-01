@@ -15,7 +15,7 @@ function supports256Colors(): boolean {
 const use256 = supports256Colors();
 
 export const theme = {
-  accent: (text: string) => use256 ? `\x1b[38;5;161m${text}\x1b[0m` : `\x1b[35m${text}\x1b[0m`,    // Warm Cherry Red
+  accent: (text: string) => use256 ? `\x1b[38;5;160m${text}\x1b[0m` : `\x1b[31m${text}\x1b[0m`,    // Warm Cherry Red
   highlight: (text: string) => use256 ? `\x1b[38;5;209m${text}\x1b[0m` : `\x1b[95m${text}\x1b[0m`, // Soft Coral
   warning: (text: string) => use256 ? `\x1b[38;5;214m${text}\x1b[0m` : `\x1b[33m${text}\x1b[0m`,   // Amber
   success: (text: string) => use256 ? `\x1b[38;5;71m${text}\x1b[0m` : `\x1b[32m${text}\x1b[0m`,    // Muted Green

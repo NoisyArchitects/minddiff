@@ -29,12 +29,25 @@ export async function logCommand(sessionId?: string) {
       }
       targetSessionId = sessions[choice].id;
     } else {
+      console.log(theme.bold('\nMindDiff Session Log Viewer'));
+      console.log(theme.dim('==================================='));
+      console.log('Print the reconstructed, cleaned text transcript of a session (removing ANSI escapes).');
+      console.log('\nUsage:');
+      console.log('  minddiff log <session-id>');
+      console.log('\nExamples:');
+      console.log('  minddiff log session-1234');
+      
       const sessions = getAllSessions();
-      if (sessions.length === 0) {
-        console.error(theme.warning('No sessions found. Run a session first.'));
-        process.exit(1);
+      if (sessions.length > 0) {
+        console.log('\nAvailable sessions:');
+        sessions.slice(0, 5).forEach(s => {
+          console.log(`  - ${s.id} (Agent: ${s.agent})`);
+        });
+      } else {
+        console.log('\nNo sessions recorded yet. Start one with "minddiff run".');
       }
-      targetSessionId = sessions[0].id;
+      console.log('');
+      process.exit(0);
     }
   }
 
