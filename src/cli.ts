@@ -386,7 +386,7 @@ async function main() {
   const command = args[0];
   const remainingArgs = args.slice(1);
 
-  let version = '1.1.1';
+  let version = '1.1.2';
   try {
     const pkgPath = join(__dirname, '..', 'package.json');
     if (existsSync(pkgPath)) {
@@ -397,7 +397,10 @@ async function main() {
 
   if (!command) {
     if (process.stdout.isTTY && process.stdin.isTTY) {
-      await homeCommand();
+      const choice = await homeCommand();
+      if (choice) {
+        await executeCommand(choice.command, choice.args);
+      }
       process.exit(0);
     } else {
       printCompactHelp();

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-07-01
+
+### Fixed
+- **Launcher Keypress Leak**: Fixed a critical P0 bug where the interactive dashboard's input listener was not removed upon transferring control to subcommands. This prevents keystrokes typed during agent execution (such as Antigravity) from leaking into the dashboard handler and causing terminal screen corruption.
+- **Circular Dependency**: Decoupled the interactive launcher loop from direct command execution by transitioning to a Promise-based subcommand resolution architecture.
+
 ## [1.1.1] - 2026-07-01
 
 ### Added

@@ -1,5 +1,4 @@
 import * as readline from 'node:readline';
-import { executeCommand } from '../cli.js';
 import { getAllSessions, SessionMetadata } from '../storage/db.js';
 import { agentPlugins, isCommandInstalled } from '../runtime/agent.js';
 import { theme } from '../utils/theme.js';
@@ -63,21 +62,19 @@ function getAgentOptions() {
   return options;
 }
 
+let activeResolve: ((value: { command: string; args: string[] } | null) => void) | null = null;
+let activeCleanup: (() => void) | null = null;
+
 function cleanAndExit(command?: string, args?: string[]) {
   // Clear screen
   process.stdout.write('\u001b[H\u001b[J');
   
-  // Restore normal stdin mode
-  process.stdin.setRawMode(false);
-  process.stdin.pause();
+  if (activeCleanup) {
+    activeCleanup();
+  }
 
-  if (command) {
-    executeCommand(command, args || []).catch((err) => {
-      console.error(theme.warning(`MindDiff execution failed: ${err.message}`));
-      process.exit(1);
-    });
-  } else {
-    process.exit(0);
+  if (activeResolve) {
+    activeResolve(command ? { command, args: args || [] } : null);
   }
 }
 
@@ -175,7 +172,7 @@ function render() {
     output += '  Preserving developer continuity alongside repository evolution.\n';
     output += '  MindDiff models thoughts, tool calls, and actions as Semantic Episodes\n';
     output += '  to explain the "Why" behind code commits.\n\n';
-    output += `  ${theme.dim('Version:      1.1.1')}\n`;
+    output += `  ${theme.dim('Version:      1.1.2')}\n`;
     output += `  ${theme.dim('License:      MIT')}\n`;
   }
 
@@ -360,8 +357,10 @@ function handleInput(key: any) {
   }
 }
 
-export function homeCommand(): Promise<void> {
+export function homeCommand(): Promise<{ command: string; args: string[] } | null> {
   return new Promise((resolve) => {
+    activeResolve = resolve;
+
     readline.emitKeypressEvents(process.stdin);
     if (process.stdin.setRawMode) {
       process.stdin.setRawMode(true);
@@ -371,11 +370,20 @@ export function homeCommand(): Promise<void> {
       if (key.ctrl && key.name === 'c') {
         // Clear screen and exit cleanly
         process.stdout.write('\u001b[H\u001b[J');
-        process.stdin.setRawMode(false);
-        process.stdin.pause();
+        cleanAndExit();
         process.exit(0);
       }
       handleInput(key);
+    };
+
+    activeCleanup = () => {
+      process.stdin.removeListener('keypress', onKeypress);
+      if (process.stdin.setRawMode) {
+        process.stdin.setRawMode(false);
+      }
+      process.stdin.pause();
+      activeResolve = null;
+      activeCleanup = null;
     };
 
     process.stdin.on('keypress', onKeypress);
