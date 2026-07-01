@@ -1,0 +1,83 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-357fc74e",
+      "timestamp": "2026-06-30T22:04:46.724Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "$p$p4m0;1uW4;2m1;1u[?u"
+      },
+      "inferred": {
+        "intent": "$p$p4m0;1uW4;2m1;1u[?u",
+        "tags": [
+          {
+            "name": "validation",
+            "confidence": 0.9
+          },
+          {
+            "name": "code_edit",
+            "confidence": 0.98
+          },
+          {
+            "name": "tool_invocation",
+            "confidence": 0.95
+          }
+        ]
+      },
+      "text": "$p$p4m0;1uW4;2m1;1u[?u\n▄▀▀▄\n▀▀▀▀▀▀\n▀▀▀▀▀▀▀▀\n  ▄▀▀    ▀▀▄\n ▄▀▀      ▀▀▄\n\n Welcome to the Antigravity CLI. You are currently not signed in.\n\n ⣟ ?2026h\n4m0;1u4;2m1;1u[?u q6h\n▄▀▀▄        Antigravity CLI 1.0.14\n▀▀▀▀▀▀       souravgoku34@gmail.com\n▀▀▀▀▀▀▀▀      Gemini 3.5 Flash (Medium)\n   ▄▀▀    ▀▀▄     ~/Desktop/DEV/NoisyArchitects/minddiff\n  ▄▀▀      ▀▀▄\n\n────────────────────────────────────────────────────────────────────────────────────",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 3284
+      }
+    },
+    {
+      "id": "mem-f108d88d",
+      "timestamp": "2026-06-30T22:04:46.724Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: >"
+      },
+      "inferred": {
+        "intent": "Execute shell command: >",
+        "tags": [
+          {
+            "name": "user_input",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": ">\n────────────────────────────────────────────────────────────────────────────────────\nProceed.\t\t\t\t (Google AI Pro)\n\n\n\n\n\nwewefweffewef/\n",
+      "rawRef": {
+        "startByte": 3361,
+        "endByte": 3497
+      }
+    },
+    {
+      "id": "mem-b2135fa2",
+      "timestamp": "2026-06-30T22:04:46.725Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: > /add-dir            Add a directory to the workspace"
+      },
+      "inferred": {
+        "intent": "Execute shell command: > /add-dir            Add a directory to the workspace",
+        "tags": [
+          {
+            "name": "user_input",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": "> /add-dir            Add a directory to the workspace\n  /agents             List available custom agents\n  /artifact           View and review artifacts\n  /btwXAsk a side question without interrupting the current task\n  /changelog          Show release notes and changes\n   ↓ 33 more\n\n  ↑/↓ Navigate · enter Select · tab Complete\necelXGemini 3.5 Flash (Medium)\n\nexit               Exit the CLI\n  /helpXShow available commands and keybindings\n  /openXOpen a file or view opened/edited files\n  /clearXClear conversation and start a new one\n  /modelXSet a model\n19 \n\n\n\n\n\nx\n\n\tP\ncontext  Visualize current context usage\n\n  ↑/↓ Navigate · enter Select · tab Complete\nancelXGemini 3.5 Flash (Medium)\n\n\n\n\ni\n\n P\n\n  ↑/↓ Navigate · enter Select · tab Complete\n/exit5 Flash (Medium)\n\n\n\n4m0;1ulXGemini 3.5 Flash (Medium)\n\n",
+      "rawRef": {
+        "startByte": 3497,
+        "endByte": 4307
+      }
+    }
+  ]
+}

@@ -15,3 +15,23 @@ chmod +x node_modules/node-pty/prebuilds/darwin-arm64/spawn-helper
 - **Local-first:** Logs are stored in `.minddiff/sessions/`.
 - **Append-only:** Output is captured exactly as received from the PTY, including ANSI escape codes.
 - **Minimal Dependencies:** Avoid adding heavy libraries for stream processing unless absolutely necessary.
+
+## Git & `.gitignore` Policy
+The `.minddiff/` directory contains both **shared** and **local-only** data. Agents must never add `.minddiff/` as a blanket ignore.
+
+### MUST be tracked in git (shared with the team)
+| Path | Why |
+|------|-----|
+| `.minddiff/commits/*.json` | Commit → session bindings. Powers `minddiff commit <sha>` for all team members. |
+| `.minddiff/sessions/*.json` | Session metadata (agent, timestamps, running status). |
+| `.minddiff/sessions/*.memory.json` | Compiled semantic episodes — the core value of MindDiff. |
+| `.minddiff/sessions/*.handoff.json` | Session continuity context. |
+| `.minddiff/sessions/*.handoff.md` | Human-readable session handoff. |
+| `.minddiff/config/` | Shared project-level MindDiff configuration. |
+
+### MUST be ignored in `.gitignore` (local-only)
+| Pattern | Why |
+|---------|-----|
+| `.minddiff/sessions/*.log` | Raw PTY terminal dumps. Can be 100MB+. Only needed locally for recompilation. |
+| `.minddiff/state.json` | Runtime lock state for active sessions. |
+| `.minddiff/state.json.lock` | File lock. |

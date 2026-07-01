@@ -1,0 +1,29 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-d7e241d5",
+      "timestamp": "2026-07-01T09:19:51.746Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "4;2m                                                                                                "
+      },
+      "inferred": {
+        "intent": "4;2m                                                                                                ",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "4;2m                                                                                                                                                                                                                                             ]111;\n",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 247
+      }
+    }
+  ]
+}

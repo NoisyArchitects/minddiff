@@ -1,0 +1,9 @@
+{
+  "id": "session-2026-06-30T08-35-15-238Z-1yzk",
+  "agent": "echo",
+  "args": [
+    "Starting test\nError: timezone failed\n$ npm run test"
+  ],
+  "createdAt": "2026-06-30T08:35:15.238Z",
+  "commits": []
+}

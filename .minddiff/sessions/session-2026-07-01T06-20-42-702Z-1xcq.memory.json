@@ -1,0 +1,29 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-604fc32e",
+      "timestamp": "2026-07-01T06:20:48.661Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "$p$p4m0;1u"
+      },
+      "inferred": {
+        "intent": "$p$p4m0;1u",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "$p$p4m0;1u",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 10
+      }
+    }
+  ]
+}

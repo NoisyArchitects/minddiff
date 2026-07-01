@@ -1,0 +1,75 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-d1b34af4",
+      "timestamp": "2026-07-01T08:32:48.738Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "$p$p4m0;1u4;2m1;1u q"
+      },
+      "inferred": {
+        "intent": "$p$p4m0;1u4;2m1;1u q",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "$p$p4m0;1u4;2m1;1u q\n\nResume with:\n  agy --conversation=2272fa17-cc06-43e6-a122-08d6bd2fc733\n  agy -c\n\n\n──────▄▀▀▄        Antigravity CLI 1.0.14──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n▀▀▀▀▀▀       souravgoku34@gmail.com (Google AI Pro)\n▀▀▀▀▀▀▀▀      Gemini 3.5 Flash (Medium)───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n   ▄▀▀    ▀▀▄     ~/Desktop/DEV/NoisyArchitects/minddiff\n  ▄▀▀      ▀▀▄3s, 492 tokens\n  Analyzing Global Rules\n────────────────────────────────────────────────────────────",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 6001
+      }
+    },
+    {
+      "id": "mem-0521cdea",
+      "timestamp": "2026-07-01T08:32:48.738Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: histDir(/Users/rish/Desktop/DEV/NoisyArchitects/minddiff) (ctrl+o to expand)"
+      },
+      "inferred": {
+        "intent": "Execute shell command: histDir(/Users/rish/Desktop/DEV/NoisyArchitects/minddiff) (ctrl+o to expand)",
+        "tags": [
+          {
+            "name": "command_execution",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": "> histDir(/Users/rish/Desktop/DEV/NoisyArchitects/minddiff) (ctrl+o to expand)\n\n▸ Thought for 3s, 492 tokens'm ready to help youith the MindDiff project.\n  Analyzing Global Rules\n\t\t\t\tfile rulesrictxecution Proyour experiin ]8;;file:///Users/rish/Desktop/DEV/NoisyArchitects/minddiff/AGENTS.mdAGENTS.md]8;; and will adhere to them:\n● ListDir(/Users/rish/Desktop/DEV/NoisyArchitects/minddiff) (ctrl+o to expand)\n  • Running in single-agent mode.r experience with the team.\n  Hello! I am Antigravity. I'm ready to help you with the MindDiff project.────────────────────────────────────────────────────────────────────────────────────────────────\n  • Providing an architectural layout plan and waiting for your  [Proceed]  before any workspace changes or commands.\nI see the Strict Execution Profile rules in ]8;;file:///Users/rish/Desktop/DEV/NoisyArchitects/minddiff/AGENTS.mdAGENTS.md]8;; and will adhere to them:────────────────\n  How can I help you today?                                                                                                                          Gemini 3.5 Flash (Medi\n• Running in single-agent mode.\n  • Operating strictly in a \"Plan First\" loop.────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n  • Providing an architectural layout plan and waiting for your  [Proceed]  before any workspace changes or commands.\n  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\nHow can I help you today?he CLI\n\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────",
+      "rawRef": {
+        "startByte": 6001,
+        "endByte": 6031
+      }
+    },
+    {
+      "id": "mem-d626598d",
+      "timestamp": "2026-07-01T08:32:48.738Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: s4m0;1u · enter Select · tab Complete                                                                                                         Gemini 3.5 Flash (Medium)"
+      },
+      "inferred": {
+        "intent": "Execute shell command: s4m0;1u · enter Select · tab Complete                                                                                                         Gemini 3.5 Flash (Medium)",
+        "tags": [
+          {
+            "name": "command_execution",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": ">s4m0;1u · enter Select · tab Complete                                                                                                         Gemini 3.5 Flash (Medium)\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\nesc to cancel                                                                                                                                        Gemini 3.5 Flash (Medium)\nResume: agy --conversation=2272fa17-cc06-43e6-a122-08d6bd2fc733 (or -c)\n  ↑/↓ Navigate · enter Select · tab Complete\nesc to cancel                                                                                                                                        Gemini 3.5 Flash (Medium)",
+      "rawRef": {
+        "startByte": 6031,
+        "endByte": 6841
+      }
+    }
+  ]
+}

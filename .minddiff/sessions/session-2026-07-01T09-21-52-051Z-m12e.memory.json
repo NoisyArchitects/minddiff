@@ -1,0 +1,52 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-d788c403",
+      "timestamp": "2026-07-01T09:22:03.748Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "Analyze system state"
+      },
+      "inferred": {
+        "intent": "Analyze system state",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "\nResume with:\n  agy --conversation=1091fad7-17a6-429b-acf4-fcf5ae13c4cc\n  agy -c\n\n  ▄▀▀      ▀▀▄\n      ▄▀▀▄        Antigravity CLI 1.0.14\n▀▀▀▀▀▀       souravgoku34@gmail.com───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n▀▀▀▀▀▀▀▀      Claude Opus 4.6 (Thinking)\n   ▄▀▀    ▀▀▄     ~/Desktop/DEV/NoisyArchitects/minddiff──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n  ▄▀▀      ▀▀▄     Exit the CLI\n\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 3277
+      }
+    },
+    {
+      "id": "mem-8a255bf8",
+      "timestamp": "2026-07-01T09:22:03.748Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: s4m0;1u · enter Select · tab Complete                                                                                                        Claude Opus 4.6 (Thinking)"
+      },
+      "inferred": {
+        "intent": "Execute shell command: s4m0;1u · enter Select · tab Complete                                                                                                        Claude Opus 4.6 (Thinking)",
+        "tags": [
+          {
+            "name": "command_execution",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": ">s4m0;1u · enter Select · tab Complete                                                                                                        Claude Opus 4.6 (Thinking)\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\nesc to cancel                                                                                                                                       Claude Opus 4.6 (Thinking)\nResume: agy --conversation=1091fad7-17a6-429b-acf4-fcf5ae13c4cc (or -c)\n  ↑/↓ Navigate · enter Select · tab Complete\nesc to cancel                                                                                                                                       Claude Opus 4.6 (Thinking)",
+      "rawRef": {
+        "startByte": 3277,
+        "endByte": 4087
+      }
+    }
+  ]
+}

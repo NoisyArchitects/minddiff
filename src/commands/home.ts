@@ -69,12 +69,15 @@ function cleanAndExit(command?: string, args?: string[]) {
   // Clear screen
   process.stdout.write('\u001b[H\u001b[J');
   
+  // Capture resolve before cleanup nullifies it
+  const resolve = activeResolve;
+
   if (activeCleanup) {
     activeCleanup();
   }
 
-  if (activeResolve) {
-    activeResolve(command ? { command, args: args || [] } : null);
+  if (resolve) {
+    resolve(command ? { command, args: args || [] } : null);
   }
 }
 
@@ -109,16 +112,7 @@ function render() {
       agentOptions.forEach((opt, idx) => {
         const isSelected = idx === state.agentCursor;
         const pointer = isSelected ? theme.highlight(' ➔ ') : '   ';
-        let labelText = opt.label;
-        if (opt.id !== 'custom') {
-          if (opt.isInstalled) {
-            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : opt.label;
-          } else {
-            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.dim(opt.label);
-          }
-        } else {
-          labelText = isSelected ? theme.bold(theme.accent(opt.label)) : opt.label;
-        }
+        const labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.dim(opt.label);
         output += `${pointer} ${labelText}\n`;
       });
     } else if (state.promptState === 'select_session') {
@@ -172,7 +166,7 @@ function render() {
     output += '  Preserving developer continuity alongside repository evolution.\n';
     output += '  MindDiff models thoughts, tool calls, and actions as Semantic Episodes\n';
     output += '  to explain the "Why" behind code commits.\n\n';
-    output += `  ${theme.dim('Version:      1.1.3')}\n`;
+    output += `  ${theme.dim('Version:      1.1.4')}\n`;
     output += `  ${theme.dim('License:      MIT')}\n`;
   }
 
@@ -361,7 +355,12 @@ export function homeCommand(): Promise<{ command: string; args: string[] } | nul
   return new Promise((resolve) => {
     activeResolve = resolve;
 
-    readline.emitKeypressEvents(process.stdin);
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    });
+    readline.emitKeypressEvents(process.stdin, rl);
+
     if (process.stdin.setRawMode) {
       process.stdin.setRawMode(true);
     }
@@ -378,10 +377,19 @@ export function homeCommand(): Promise<{ command: string; args: string[] } | nul
 
     activeCleanup = () => {
       process.stdin.removeListener('keypress', onKeypress);
+      process.stdin.removeAllListeners('keypress');
+      process.stdin.removeAllListeners('data');
       if (process.stdin.setRawMode) {
         process.stdin.setRawMode(false);
       }
+      if (process.stdin.setEncoding) {
+        process.stdin.setEncoding(null as any);
+      }
+      try {
+        while (process.stdin.read() !== null) {}
+      } catch {}
       process.stdin.pause();
+      rl.close();
       activeResolve = null;
       activeCleanup = null;
     };

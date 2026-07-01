@@ -1,0 +1,25 @@
+{
+  "sha": "c0645f7ad3c7ef0dbfa68b7eb073f5ac2c68d98e",
+  "message": "release: v1.1.0 stable",
+  "timestamp": "2026-07-01T11:33:36+05:30",
+  "associatedSessions": [
+    "session-2026-06-30T09-27-25-472Z-buva"
+  ],
+  "filesChanged": [
+    ".github/workflows/publish.yml",
+    "CHANGELOG.md",
+    "README.md",
+    "docs/architecture.md",
+    "package.json",
+    "src/cli.ts",
+    "src/commands/home.ts",
+    "src/commands/view.ts",
+    "src/compiler/episodes.ts",
+    "src/compiler/passes/infer.ts",
+    "src/compiler/passes/reconstruct.ts",
+    "src/compiler/passes/segment.ts",
+    "src/compiler/pipeline.ts",
+    "tests/run_tests.ts",
+    "tsconfig.json"
+  ]
+}

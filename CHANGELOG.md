@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-07-01
+
+### Fixed
+- **TUI Promise Resolution Bug**: Fixed a critical bug where selecting any option in the interactive dashboard caused the process to silently exit. The `activeCleanup()` function was nullifying `activeResolve` before `cleanAndExit` could call it, causing the `homeCommand()` promise to never resolve.
+- **In-Process Command Execution**: Replaced `spawnSync` child-process re-launch with direct in-process `executeCommand()` call, eliminating inherited stdin issues after TUI cleanup.
+
 ## [1.1.3] - 2026-07-01
 
 ### Fixed

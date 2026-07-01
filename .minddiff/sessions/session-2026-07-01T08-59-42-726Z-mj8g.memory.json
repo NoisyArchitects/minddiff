@@ -1,0 +1,29 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-4f8cb2c3",
+      "timestamp": "2026-07-01T09:04:06.741Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "$p$p4m0;1u4;2m1;1u q"
+      },
+      "inferred": {
+        "intent": "$p$p4m0;1u4;2m1;1u q",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "$p$p4m0;1u4;2m1;1u q\n      ▄▀▀▄        Antigravity CLI 1.0.14\n▀▀▀▀▀▀       souravgoku34@gmail.com      (Google AI Pro)\n▀▀▀▀▀▀▀▀      Gemini 3.5 Flash (Medium)\n   ▄▀▀    ▀▀▄     ~/Desktop/DEV/NoisyArchitects/minddiff\n  ▄▀▀      ▀▀▄\n\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n/ 4m0;1u\n──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\nesc to cancel the CLI                                                                                                                                Gemini 3.5 Flash (Medium)\n\n  ↑/↓ Navigate · enter Select · tab Complete\nesc to cancele · enter Select · tab Complete                                                                                                         Gemini 3.5 Flash (Medium)\nesc to cancel         Set a model                                                                                                                    Gemini 3.5 Flash (Medium)\n19 ↓ 33 more\n\n  ↑/↓ Navigate · enter Select · tab Complete\nesc to cancel                                                                                                                                        Gemini 3.5 Flash (Medium)",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 1395
+      }
+    }
+  ]
+}

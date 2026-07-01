@@ -1,0 +1,52 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-d85f4de5",
+      "timestamp": "2026-07-01T08:54:42.255Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "$p$p4m0;1u4;2m1;1u q"
+      },
+      "inferred": {
+        "intent": "$p$p4m0;1u4;2m1;1u q",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "text": "$p$p4m0;1u4;2m1;1u q\n      ▄▀▀▄        Antigravity CLI 1.0.14\n▀▀▀▀▀▀       souravgoku34@gmail.com\n▀▀▀▀▀▀▀▀      Gemini 3.5 Flash (Medium)\n   ▄▀▀    ▀▀▄     ~/Desktop/DEV/NoisyArchitects/minddiff\n  ▄▀▀      ▀▀▄\n\n────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\n⚠ Eligibility Check\n  ⎿  Eligibility check failed: failed to get load code assist response: INTERNAL (code 500): We can't connect to Gemini─────\nCode\n Assist for individuals. Please try again in a few minutes.\n  ↑/↓ Navigate · enter Select · tab Complete\n────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 3276
+      }
+    },
+    {
+      "id": "mem-bf9cd433",
+      "timestamp": "2026-07-01T08:54:42.256Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: 4m0;1u"
+      },
+      "inferred": {
+        "intent": "Execute shell command: 4m0;1u",
+        "tags": [
+          {
+            "name": "command_execution",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": "> 4m0;1u\n────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────\nesc to cancel the CLI                                                                              Gemini 3.5 Flash (Medium)\n\n  ↑/↓ Navigate · enter Select · tab Complete\nesc to cancel                                                                                      Gemini 3.5 Flash (Medium)",
+      "rawRef": {
+        "startByte": 3276,
+        "endByte": 3705
+      }
+    }
+  ]
+}

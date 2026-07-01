@@ -1,0 +1,26 @@
+{
+  "sha": "3c1d70bacec63f8655f86c45115753608e4a3c68",
+  "message": "feat: complete Infrastructure & Runtime milestone\n- migrate storage to .minddiff\n- implement deterministic Git synchronization\n- introduce multi-agent runtime\n- add minddiff init and sync\n- improve session lifecycle and crash recovery\n- resolve concurrency and PTY lifecycle issues\n- document architecture and workflow\n- add CHANGELOG",
+  "timestamp": "2026-06-29T14:16:39+05:30",
+  "associatedSessions": [
+    "session-2026-06-30T07-01-44-102Z-qqc5"
+  ],
+  "filesChanged": [
+    ".gitignore",
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "GEMINI.md",
+    "README.md",
+    "docs/architecture.md",
+    "src/cli.ts",
+    "src/commands/gemini.ts",
+    "src/commands/init.ts",
+    "src/commands/run.ts",
+    "src/commands/watch.ts",
+    "src/runtime/agent.ts",
+    "src/runtime/spawn.ts",
+    "src/storage/db.ts",
+    "src/storage/git.ts",
+    "src/storage/logs.ts"
+  ]
+}

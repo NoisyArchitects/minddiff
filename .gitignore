@@ -2,5 +2,15 @@ node_modules/
 dist/
 .env
 ref/
-.minddiff/state.json
-.minddiff/state.json.lock
+.DS_Store
+
+# MindDiff runtime state (local-only lock files)
+**/.minddiff/state.json
+**/.minddiff/state.json.lock
+
+# MindDiff raw session logs (massive PTY dumps, local-only)
+# DO NOT ignore the rest of .minddiff/ — compiled memories, commit
+# bindings, session metadata, and handoff files must be tracked in
+# git so that team members can use `minddiff commit <sha>` and
+# browse shared engineering context.
+**/.minddiff/sessions/*.log

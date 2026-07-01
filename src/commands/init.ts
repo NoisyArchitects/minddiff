@@ -44,7 +44,29 @@ export function initCommand() {
       console.log('⚠ Not inside a Git repository. Git hooks installation skipped.');
     }
 
-    // 3. Configure workspace
+    // 3. Configure .gitignore
+    if (isGitRepository()) {
+      const gitignorePath = join(process.cwd(), '.gitignore');
+      const requiredPatterns = [
+        '.minddiff/sessions/*.log',
+        '.minddiff/state.json',
+        '.minddiff/state.json.lock',
+      ];
+      let gitignoreContent = existsSync(gitignorePath) ? readFileSync(gitignorePath, 'utf8') : '';
+      const missing = requiredPatterns.filter(p => !gitignoreContent.includes(p));
+      if (missing.length > 0) {
+        const block = '\n# MindDiff local-only files (raw logs and runtime state)\n'
+          + '# Compiled memories, commit bindings, and session metadata\n'
+          + '# are tracked in git for team-wide engineering context.\n'
+          + missing.join('\n') + '\n';
+        writeFileSync(gitignorePath, gitignoreContent.trimEnd() + '\n' + block, 'utf8');
+        console.log('✓ Configured .gitignore');
+      } else {
+        console.log('✓ .gitignore already configured');
+      }
+    }
+
+    // 4. Configure workspace
     const configPath = join(getDbDirectory(), 'config', 'config.json');
     if (!existsSync(configPath)) {
       writeFileSync(configPath, JSON.stringify({ version: '1.0.0' }, null, 2), 'utf8');

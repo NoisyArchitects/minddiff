@@ -1,0 +1,29 @@
+{
+  "sha": "a5cfc4f2d62f472a0875612180d7b9d507b26b36",
+  "message": "feat: complete Memory Navigation Layer milestone\n\n- implement memory compiler pipeline with reconstruction, sanitization, segmentation, inference, and emit passes\n- implement status, history, view, log, and memories commands\n- support commit lookup and mapping back to associated developer sessions\n- add memory tag query/filter capabilities\n- document parser architecture and local development guidelines",
+  "timestamp": "2026-07-01T04:12:35+05:30",
+  "associatedSessions": [
+    "session-2026-06-30T09-27-25-472Z-buva"
+  ],
+  "filesChanged": [
+    "docs/local-development.md",
+    "docs/parser_architecture.md",
+    "src/cli.ts",
+    "src/commands/commit.ts",
+    "src/commands/history.ts",
+    "src/commands/log.ts",
+    "src/commands/memories.ts",
+    "src/commands/run.ts",
+    "src/commands/status.ts",
+    "src/commands/view.ts",
+    "src/compiler/passes/clean.ts",
+    "src/compiler/passes/emit.ts",
+    "src/compiler/passes/infer.ts",
+    "src/compiler/passes/reconstruct.ts",
+    "src/compiler/passes/segment.ts",
+    "src/compiler/pipeline.ts",
+    "src/compiler/types.ts",
+    "src/storage/db.ts",
+    "src/storage/git.ts"
+  ]
+}

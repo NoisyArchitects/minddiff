@@ -1,0 +1,82 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-818e2940",
+      "timestamp": "2026-06-30T08:35:15.250Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "Starting test"
+      },
+      "inferred": {
+        "intent": "Starting test",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "text": "Starting test",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 13
+      }
+    },
+    {
+      "id": "mem-3b337e4c",
+      "timestamp": "2026-06-30T08:35:15.250Z",
+      "source": "system",
+      "observed": {
+        "type": "error_observation",
+        "summary": "Error: timezone failed"
+      },
+      "inferred": {
+        "intent": "Error: timezone failed",
+        "tags": [
+          {
+            "name": "debugging",
+            "confidence": 0.9
+          },
+          {
+            "name": "validation",
+            "confidence": 0.85
+          }
+        ],
+        "constraints": [
+          "Error: timezone failed"
+        ]
+      },
+      "text": "Error: timezone failed",
+      "rawRef": {
+        "startByte": 15,
+        "endByte": 37
+      }
+    },
+    {
+      "id": "mem-5a790ba1",
+      "timestamp": "2026-06-30T08:35:15.250Z",
+      "source": "user",
+      "observed": {
+        "type": "command_execution",
+        "summary": "Execute shell command: $ npm run test"
+      },
+      "inferred": {
+        "intent": "Execute shell command: $ npm run test",
+        "tags": [
+          {
+            "name": "user_input",
+            "confidence": 1
+          }
+        ]
+      },
+      "text": "$ npm run test\n",
+      "rawRef": {
+        "startByte": 39,
+        "endByte": 54
+      }
+    }
+  ]
+}

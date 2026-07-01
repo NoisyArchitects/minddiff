@@ -1,0 +1,14 @@
+{
+  "sha": "89295312e4d91967f1cd2a9d6089f76a501ac4ce",
+  "message": "release: v1.1.2 fix interactive launcher keypress listener leak (P0)",
+  "timestamp": "2026-07-01T14:16:02+05:30",
+  "associatedSessions": [
+    "session-2026-06-30T09-27-25-472Z-buva"
+  ],
+  "filesChanged": [
+    "CHANGELOG.md",
+    "package.json",
+    "src/cli.ts",
+    "src/commands/home.ts"
+  ]
+}

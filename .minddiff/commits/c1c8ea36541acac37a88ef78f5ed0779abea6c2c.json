@@ -1,0 +1,23 @@
+{
+  "sha": "c1c8ea36541acac37a88ef78f5ed0779abea6c2c",
+  "message": "release: v1.1.1 UX polish, onboarding, and developer experience",
+  "timestamp": "2026-07-01T13:51:45+05:30",
+  "associatedSessions": [
+    "session-2026-06-30T09-27-25-472Z-buva"
+  ],
+  "filesChanged": [
+    "CHANGELOG.md",
+    "docs/developer.md",
+    "docs/local-development.md",
+    "package-lock.json",
+    "package.json",
+    "src/cli.ts",
+    "src/commands/commit.ts",
+    "src/commands/home.ts",
+    "src/commands/log.ts",
+    "src/commands/run.ts",
+    "src/commands/view.ts",
+    "src/commands/watch.ts",
+    "src/utils/theme.ts"
+  ]
+}

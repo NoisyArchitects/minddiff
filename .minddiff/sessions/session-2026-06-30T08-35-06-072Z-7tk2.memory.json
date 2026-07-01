@@ -1,0 +1,29 @@
+{
+  "compilerVersion": "1.0.0",
+  "schemaVersion": "1.0.0",
+  "memories": [
+    {
+      "id": "mem-5773a8bf",
+      "timestamp": "2026-06-30T08:35:06.084Z",
+      "source": "agent",
+      "observed": {
+        "type": "thought",
+        "summary": "Testing Memory Compiler!"
+      },
+      "inferred": {
+        "intent": "Testing Memory Compiler!",
+        "tags": [
+          {
+            "name": "thought",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "text": "Testing Memory Compiler!\n",
+      "rawRef": {
+        "startByte": 0,
+        "endByte": 25
+      }
+    }
+  ]
+}

@@ -386,7 +386,7 @@ async function main() {
   const command = args[0];
   const remainingArgs = args.slice(1);
 
-  let version = '1.1.3';
+  let version = '1.1.4';
   try {
     const pkgPath = join(__dirname, '..', 'package.json');
     if (existsSync(pkgPath)) {
@@ -399,6 +399,10 @@ async function main() {
     if (process.stdout.isTTY && process.stdin.isTTY) {
       const choice = await homeCommand();
       if (choice) {
+        // Resume stdin after TUI cleanup so interactive commands can use it
+        if (process.stdin.isPaused()) {
+          process.stdin.resume();
+        }
         await executeCommand(choice.command, choice.args);
       }
       process.exit(0);

@@ -43,8 +43,13 @@ export function selectPrompt(message: string, options: string[]): Promise<number
       // Show cursor
       process.stdout.write('\u001b[?25h');
       process.stdin.removeListener('keypress', onKeypress);
+      process.stdin.removeAllListeners('keypress');
+      process.stdin.removeAllListeners('data');
       if (process.stdin.setRawMode) {
         process.stdin.setRawMode(false);
+      }
+      if (process.stdin.setEncoding) {
+        process.stdin.setEncoding(null as any);
       }
       rl.close();
     };
