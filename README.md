@@ -2,121 +2,152 @@
 
 > Preserving cognitive traces alongside repository evolution.
 
-**Status:** *Experimental Exploration. This is an active systems and tooling experiment investigating how to preserve cognitive continuity and observability during AI-assisted engineering.*
+MindDiff is a **Developer Continuity Engine** designed to capture, structure, and preserve the reasoning context behind code changes. It acts as an observability layer, bridging the gap between code outcomes (Git commits) and the developer thoughts, debugging loops, and linter constraints that produced them.
 
 ---
 
-## The Bottleneck: Generation vs. Comprehension
+## Why MindDiff?
 
-Modern AI coding tools dramatically increase code generation speed. They rapidly synthesize architecture, business logic, debugging fixes, refactors, and large implementations.
+### 1. Generation vs. Comprehension
+AI coding tools dramatically increase code creation speed. But human comprehension, memory, and reasoning continuity do not scale at the same rate. Developers remain responsible for understanding and maintaining systems weeks or months later. **Generation speed ≠ comprehension speed.**
 
-But human comprehension, memory, and reasoning continuity do not scale at the same speed. Developers remain responsible for understanding the code, debugging it, safely modifying it, maintaining production systems, and reasoning about architectural decisions weeks or months later.
+### 2. Git Tracks the "What", MindDiff Tracks the "Why"
+Git is the canonical source of truth for code snapshots, chronology, and branching. However, Git only records the *outcome* of reasoning. The exploratory paths, failed compiler attempts, and architectural rationales are lost once the code is committed. MindDiff does not replace Git—it enriches it by attaching cognitive timelines directly to your repository's Git commits.
 
-This creates a new engineering bottleneck:
+---
 
-**Generation speed ≠ comprehension speed.**
+## Twin Workflows
 
-The real problem is that AI-generated reasoning evaporates faster than Git can preserve it.
+MindDiff is designed to fit your preferred workflow:
 
-## Why Git Alone is Insufficient
+1. **Interactive Launcher (Recommended)**
+   Simply run:
+   ```bash
+   minddiff
+   ```
+   Open a keyboard-navigated dashboard to launch commands, browse session history, read guides, and explore references directly.
 
-Git is the source of truth for repository evolution. It perfectly solves:
-- Code state
-- Chronology
-- Branching and merging
-- Snapshots
+2. **Direct CLI**
+   Run commands directly for speed or CI scripting:
+   ```bash
+   minddiff history
+   # or
+   minddiff commit <sha>
+   ```
 
-However, Git tracks the *outcome* of reasoning, not the reasoning itself. In an AI-native workflow, much of the exploratory context, debugging logic, and architectural rationale is generated in ephemeral chat contexts or temporary logs, which are lost once the code is committed.
+---
 
-MindDiff **does not replace Git.** It exists to augment it, preserving cognitive traces alongside repository evolution.
+## Core Workflow
 
-## What MindDiff Is
-
-MindDiff is an observability and continuity layer around AI-assisted engineering workflows.
-
-Originally conceptualized as a static logging system, MindDiff has evolved into an active runtime wrapper around AI terminal workflows. It observes AI-native engineering sessions in real time by wrapping the underlying CLI tools, capturing the live terminal byte stream, and preserving it locally within the repository.
-
-MindDiff does not generate intelligence, replace your IDE, or act as an agent framework. It simply captures, timestamps, attaches context, and preserves existing reasoning traces.
-
-Crucially, these logs evolve *with* the repository:
-- Logs live inside the repository (`.minddiff/sessions/`).
-- Logs are committed with code.
-- Branches naturally fork cognition.
-- Merges naturally merge cognition.
-- Deleted branches naturally remove abandoned exploration paths.
-
-## Runtime Wrapper Architecture
-
-MindDiff operates by wrapping AI CLI tools (like Gemini CLI) in a pseudo-terminal (PTY) using `node-pty`. This architecture allows it to:
-- Preserve the native interactive terminal UX (colors, prompts, screen clearing).
-- Intercept the live `stdout` and `stderr` byte streams.
-- Append the session stream to local repo-native logs.
-- Expose the stream for passive live observation from another terminal.
-
-## How It Currently Works
-
-1. **Initialization:** Run `minddiff init` to set up `.minddiff` and configure the Git post-commit hook.
-2. **Launch:** Run your AI CLI agent wrapped under MindDiff (e.g. `minddiff run gemini` or `minddiff run claude`).
-3. **Passthrough:** MindDiff allocates a PTY, spawns the target agent CLI, and pipes your input and its output transparently. You interact with the AI exactly as you normally would.
-4. **Interception:** As the session progresses, MindDiff tees the raw PTY stream to a timestamped, append-only log file in the `.minddiff/sessions/` directory.
-5. **Observation:** A separate terminal can tail this stream using the `watch` command, allowing developers to observe the AI's cognitive process in real time.
-
-## Example Workflow
-
-The architecture enables a powerful separation of concerns during complex engineering tasks:
+Using MindDiff is simple and requires zero change to your daily Git commands:
 
 ```bash
-# Terminal 1 (The Driver): Start an active AI engineering session
-npm run dev -- run gemini
+# Step 1: Initialize MindDiff in your project root (installs Git hooks)
+minddiff init
 
-# Terminal 2 (The Observer): Passively watch the cognition stream evolve
-npm run dev -- watch
+# Step 2: Start an active engineering session under capture
+minddiff run gemini  # (or claude, aider, or npm test)
+
+# Step 3: Write code, run tests, and commit normally
+git commit -m "Refactor parser logic"
+
+# Step 4: Revisit the context behind the commit later
+minddiff commit HEAD
 ```
 
-In this setup, Terminal 1 drives the active session, while Terminal 2 passively observes the cognition stream's evolution. This allows for real-time review and monitoring without interrupting the active prompt interface.
+---
 
-## Current Commands
+## Command Reference
 
-- `minddiff init`: Initializes the `.minddiff` database and configures Git post-commit hooks.
-- `minddiff run <agent> [args]`: Wraps the given CLI agent in a PTY, intercepting and logging the session to `.minddiff/sessions/`.
-- `minddiff sync`: Synchronizes any pending commits with active sessions (automated via post-commit hooks).
-- `minddiff watch`: Tails the most recent log file in the repository, rendering the raw PTY stream (including ANSI escape codes) for live observability.
+### `minddiff`
+Opens the interactive terminal launcher dashboard (Commands, Tutorials, Help, and About tabs). Fallbacks to static help in non-interactive (non-TTY) shells.
+```bash
+minddiff
+```
 
-## PTY, Watch, and Terminal Reality
+### `minddiff init`
+Initializes the workspace database under `.minddiff/` and registers standard Git commit hooks.
+```bash
+minddiff init
+```
 
-By utilizing a PTY, MindDiff ensures that the underlying AI tool believes it is attached to a real terminal. This is critical for tools that rely on interactive prompts or rich terminal UIs. The intercepted stream includes all ANSI escape codes, cursor movements, and rendering commands.
+### `minddiff run <agent> [args...]`
+Spawns a captured terminal wrapper wrapping the target agent or CLI command.
+```bash
+minddiff run gemini
+minddiff run npm test
+```
 
-The `watch` command leverages this by reading the raw byte stream from the log file and writing it directly to standard output. This effectively replays the terminal state, allowing you to observe the UI and reasoning process exactly as it appeared to the primary user, updating in real time as new bytes are appended.
+### `minddiff status`
+Displays active capture sessions and process details.
+```bash
+minddiff status
+```
 
-## Design Philosophy
+### `minddiff watch`
+Tails the live stdout log stream of the currently active capturing session.
+```bash
+minddiff watch
+```
 
-The system is intentionally simple, terminal-native, and adheres to strict constraints:
-- **Repo-native:** Lives alongside your code.
-- **Git-compatible:** Leverages your existing VCS.
-- **Local-first:** No cloud dependency required to read your own project history.
-- **Append-only:** Traces are written and preserved, not retroactively polished.
-- **Terminal-native:** Respects standard Unix streams and terminal semantics.
-- **Unmodified Preservation:** Preserves the AI’s original output stream as much as possible instead of heavily transforming or interpreting it.
+### `minddiff history`
+Lists all previously recorded developer sessions in reverse chronological order.
+```bash
+minddiff history
+```
 
-## Raw Stream ≠ Semantic Cognition
+### `minddiff view <session-id>`
+View details of a compiled developer session. Defaults to the **Narrative Story** layout which groups terminal steps into logical goal episodes.
+```bash
+minddiff view session-2026-06-30-qqc5
+minddiff view session-2026-06-30-qqc5 --raw   # Dumps flat MemoryBlock records
+minddiff view session-2026-06-30-qqc5 --json  # Dumps raw database JSON
+```
 
-A critical discovery in this evolution is that the terminal protocol (ANSI redraws, PTY rendering, cursor movements) is distinct from the semantic reasoning layer. 
+### `minddiff log <session-id>`
+Prints the reconstructed, fully-cleaned, raw text log of a session (ANSI styling and carriage returns resolved).
+```bash
+minddiff log session-2026-06-30-qqc5
+```
 
-MindDiff currently captures terminal reality before interpretation.
+### `minddiff commit <commit-sha>`
+Explains why a Git commit happened by checking its linked sessions, linter constraints, and developer goals.
+```bash
+minddiff commit e8a12f9
+```
 
-This is a deliberate architectural choice. Before attempting to build complex parsers, semantic extractors, or "smart" summaries, the system prioritizes a robust, high-fidelity source of truth. Every UI rendering, every backspace, and every reasoning trace is captured exactly as it occurred in the terminal.
+### `minddiff memories`
+Browses a consolidated chronological timeline of all compiled developer facts and tag tags.
+```bash
+minddiff memories
+minddiff memories --tag debugging
+```
 
-## Current Limitations
+### `minddiff sync`
+Manually scans and synchronizes offline Git commits with recorded sessions.
+```bash
+minddiff sync
+```
 
-- **Raw ANSI Streams:** Because the logs store the raw PTTY byte stream, they are optimal for terminal replay (`watch`) but difficult to read in standard Markdown viewers due to the presence of ANSI escape codes.
-- **Platform Support:** The PTY implementation (`node-pty`) can be environmentally sensitive, particularly on ARM architectures.
-- **No Semantic Extraction:** The system does not yet parse the raw stream to extract clean, semantic Markdown summaries.
-
-## Future Exploration Areas
-
-- **Semantic Extraction:** Building parsers to separate the terminal rendering layer from the semantic layer, extracting clean Markdown reasoning summaries without losing the original fidelity.
-- **Context Mapping:** Exploring how to intuitively map historical cognitive traces to the evolving file structure (e.g., when a file is renamed or refactored).
-- **Trigger Mechanisms:** Identifying the most frictionless ways to start and stop logging contexts during complex workflows.
+### `minddiff help [command]`
+Displays the main help documentation or command-specific manuals.
+```bash
+minddiff help
+minddiff help run
+```
 
 ---
-*MindDiff is a continued exploration into building resilient human-AI engineering workflows.*
+
+## Project Links
+
+* **Project Homepage**: [noisyarchitects.org/projects/minddiff](https://noisyarchitects.org/projects/minddiff)
+* **npm Registry**: [npmjs.com/package/minddiff](https://www.npmjs.com/package/minddiff)
+* **GitHub Repository**: [github.com/NoisyArchitects/minddiff](https://github.com/NoisyArchitects/minddiff)
+
+---
+
+## Contributing & Development
+
+We welcome contributions! To set up, compile, and run MindDiff locally in development mode, please read our contributor guide:
+
+👉 [docs/local-development.md](file:///Users/rish/Desktop/DEV/NoisyArchitects/minddiff/docs/local-development.md)

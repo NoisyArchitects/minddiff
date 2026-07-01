@@ -6,6 +6,7 @@ import { cleanTerminalText } from './passes/clean.js';
 import { segmentTerminalText } from './passes/segment.js';
 import { emitMemories } from './passes/emit.js';
 import { MemoryLedger } from './types.js';
+import { generateHandoff } from './episodes.js';
 
 /**
  * Memory Compiler Pipeline
@@ -41,4 +42,11 @@ export async function compileSession(sessionId: string): Promise<void> {
   };
 
   writeFileSync(memoryPath, JSON.stringify(ledger, null, 2), 'utf8');
+
+  // Post-compile Pass: Generate Session Handoff Assets
+  try {
+    generateHandoff(sessionId, memories);
+  } catch (handoffErr: any) {
+    console.error(`MindDiff Handoff Generation Failed: ${handoffErr.message}`);
+  }
 }

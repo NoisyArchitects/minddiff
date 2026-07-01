@@ -31,4 +31,4 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Publish to npm
-        run: npm publish --provenance --tag alpha
+        run: npm publish --provenance

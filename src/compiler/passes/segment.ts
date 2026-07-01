@@ -11,7 +11,7 @@ export interface RawSegment {
 /**
  * Pass 3: Memory Segmentation
  * Scans the cleaned text line-by-line and groups them into logical segments
- * based on command boundaries, user prompts, error outputs, and tool invocation markers.
+ * based on structural command boundaries, user prompts, error signatures, and tool markers.
  */
 export function segmentTerminalText(cleanedText: string): RawSegment[] {
   const lines = cleanedText.split('\n');
@@ -41,27 +41,32 @@ export function segmentTerminalText(cleanedText: string): RawSegment[] {
     const line = lines[i];
     const trimmed = line.trim();
 
-    // Check for session initialization boundaries
+    // 1. Session start boundary - always single line and committed immediately
     if (trimmed.startsWith('-- MindDiff: Starting')) {
       commitSegment();
-      currentSource = 'system';
-      currentType = 'session_start';
-      segmentStartIdx = currentIdx;
-      currentSegmentLines.push(line);
+      segments.push({
+        text: line,
+        source: 'system',
+        observedType: 'session_start',
+        startIndex: currentIdx,
+        endIndex: currentIdx + line.length
+      });
+      currentSegmentLines = [];
+      currentSource = 'agent';
+      currentType = 'thought';
+      segmentStartIdx = currentIdx + line.length + 1;
     } 
-    // Check for shell command execution boundaries
-    else if (trimmed.startsWith('$ ') || (trimmed.startsWith('>') && !trimmed.startsWith('>>'))) {
+    // 2. Shell command execution boundary (e.g. "$ npm test")
+    else if (trimmed.startsWith('$ ') || (trimmed.startsWith('>') && !trimmed.startsWith('>>') && !trimmed.startsWith('>>>'))) {
       commitSegment();
       currentSource = 'user';
       currentType = 'command_execution';
       segmentStartIdx = currentIdx;
       currentSegmentLines.push(line);
     } 
-    // Check for runtime errors, warnings, or compiler crash cues
+    // 3. Compiler / Test failure headers
     else if (
-      trimmed.includes('Error:') || 
-      trimmed.includes('Exception:') || 
-      trimmed.includes('FAILED') || 
+      /^(error TS\d+:|Traceback \(most recent call last\):|\d+:\d+\s+error\s+|FAIL\s+|✕\s+|Exception\s+)/.test(trimmed) ||
       trimmed.includes('Linter Error')
     ) {
       commitSegment();
@@ -70,8 +75,29 @@ export function segmentTerminalText(cleanedText: string): RawSegment[] {
       segmentStartIdx = currentIdx;
       currentSegmentLines.push(line);
     } 
-    // General accumulation block
+    // 4. Tool call signature boundaries
+    else if (
+      trimmed.startsWith('[tool_call]') ||
+      trimmed.startsWith('Calling tool ') ||
+      trimmed.startsWith('Tool output:')
+    ) {
+      commitSegment();
+      currentSource = 'agent';
+      currentType = 'tool_call';
+      segmentStartIdx = currentIdx;
+      currentSegmentLines.push(line);
+    }
+    // 5. Default accumulation block
     else {
+      // If we were in an error observation and this line is NOT a follow-up error,
+      // commit the error segment and transition back to a thought segment.
+      if (currentType === 'error_observation') {
+        commitSegment();
+        currentSource = 'agent';
+        currentType = 'thought';
+        segmentStartIdx = currentIdx;
+      }
+      
       if (currentSegmentLines.length === 0) {
         segmentStartIdx = currentIdx;
         currentSource = 'agent';
@@ -80,7 +106,6 @@ export function segmentTerminalText(cleanedText: string): RawSegment[] {
       currentSegmentLines.push(line);
     }
     
-    // Accumulate running character index length (+1 for newline character)
     currentIdx += line.length + 1;
   }
   

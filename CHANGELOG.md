@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-01
+
+### Added
+- **Interactive Terminal Launcher**: Launching `minddiff` with no arguments opens an interactive terminal dashboard. Navigate commands, tutorials, help references, and about specs using standard arrow keys (`←`/`→`/`↑`/`↓`).
+- **Interactive Command Wizards**: Launching commands from the dashboard prompts you for inputs (such as choosing an agent, selecting past session IDs, or entering Git SHAs) directly within the dashboard.
+- **Narrative Story View**: The `minddiff view <session-id>` command now groups granular timeline logs into logical **Semantic Episodes** (Intent -> Actions -> Outcome -> Reflection) to render a clean, visual story of your session.
+- **Session Handoff Generator**: Handoff summaries (`session-<id>.handoff.md` and `.handoff.json`) are automatically created when a session finishes, summarizing what was accomplished, what is left unfinished, active files, and blockers.
+- **Subcommand Documentation**: Query detailed command reference manuals directly in your shell using `minddiff help <command>` (e.g. `minddiff help run`).
+- **Headless Terminal Fallback**: Configured automatic fallback from the interactive dashboard to a clean, static command palette when running in non-TTY (non-interactive) shells.
+
+### Changed
+- **Direct CLI view modes**: Added `--raw` and `--json` flags to `view` command, allowing developers to retrieve raw database events or raw JSON outputs when scripting.
+
+### Internal
+- **Three-Layer Architecture**: Restructured compiler pipelines into three modular, decoupled layers (Reconstructor, Memory Compiler, and Memory Explorer) to isolate stream decoding from fact tagging and episode projection.
+- **Unified Dispatcher**: Extracted command execution routing into a single dispatcher shared identically by the CLI parser and the dashboard launcher to prevent duplicate logic.
+
 ## [1.0.1-alpha.2] - 2026-06-29
 
 ### Added
