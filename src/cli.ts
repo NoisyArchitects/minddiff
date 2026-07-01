@@ -386,7 +386,7 @@ async function main() {
   const command = args[0];
   const remainingArgs = args.slice(1);
 
-  let version = '1.1.2';
+  let version = '1.1.3';
   try {
     const pkgPath = join(__dirname, '..', 'package.json');
     if (existsSync(pkgPath)) {

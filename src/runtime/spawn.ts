@@ -61,6 +61,7 @@ export function spawnWrapper(command: string, args: string[], logStream: WriteSt
         ptyProcess.write(data.toString());
       };
       process.stdin.on('data', onStdinData);
+      process.stdin.resume();
 
       // Capture PTY output
       ptyProcess.onData((data) => {

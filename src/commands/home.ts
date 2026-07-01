@@ -172,7 +172,7 @@ function render() {
     output += '  Preserving developer continuity alongside repository evolution.\n';
     output += '  MindDiff models thoughts, tool calls, and actions as Semantic Episodes\n';
     output += '  to explain the "Why" behind code commits.\n\n';
-    output += `  ${theme.dim('Version:      1.1.2')}\n`;
+    output += `  ${theme.dim('Version:      1.1.3')}\n`;
     output += `  ${theme.dim('License:      MIT')}\n`;
   }
 
