@@ -1,4 +1,5 @@
 import { getAllSessions, getSessionMemory } from '../storage/db.js';
+import { theme } from '../utils/theme.js';
 
 function getRelativeTime(dateStr: string): string {
   const now = new Date();
@@ -20,21 +21,29 @@ export function historyCommand() {
   const sessions = getAllSessions();
 
   if (sessions.length === 0) {
-    console.log('No captured sessions found. Initialize a session using "minddiff run <agent>".');
+    console.log(`No captured sessions found. Initialize a session using "${theme.highlight('minddiff run')}".`);
     return;
   }
 
-  console.log('\nMindDiff History:');
-  console.log('='.repeat(110));
+  console.log(`\n${theme.bold(theme.accent('MindDiff History:'))}`);
+  console.log(theme.dim('='.repeat(110)));
   
   // Header
-  const colId = 'SESSION ID'.padEnd(45);
-  const colAgent = 'AGENT'.padEnd(12);
-  const colTime = 'TIME'.padEnd(14);
-  const colCommits = 'COMMITS'.padEnd(9);
-  const colIntent = 'PRIMARY INTENT';
-  console.log(`${colId}${colAgent}${colTime}${colCommits}${colIntent}`);
-  console.log('-'.repeat(110));
+  const colId = theme.bold('SESSION ID').padEnd(45 + theme.bold('').length);
+  const colAgent = theme.bold('AGENT').padEnd(12 + theme.bold('').length);
+  const colTime = theme.bold('TIME').padEnd(14 + theme.bold('').length);
+  const colCommits = theme.bold('COMMITS').padEnd(9 + theme.bold('').length);
+  const colIntent = theme.bold('PRIMARY INTENT');
+  
+  // Print headers cleanly without formatting padding calculation issues
+  console.log(
+    'SESSION ID'.padEnd(45) +
+    'AGENT'.padEnd(12) +
+    'TIME'.padEnd(14) +
+    'COMMITS'.padEnd(9) +
+    'PRIMARY INTENT'
+  );
+  console.log(theme.dim('-'.repeat(110)));
 
   for (const session of sessions) {
     const ledger = getSessionMemory(session.id);
@@ -42,14 +51,21 @@ export function historyCommand() {
       ? ledger.memories[0].inferred.intent || 'Analyze system state'
       : (session.args.length > 0 ? `run ${session.agent} ${session.args.join(' ')}` : `run ${session.agent}`);
 
-    const idStr = session.id.padEnd(45);
+    const idStr = theme.bold(session.id).padEnd(45 + theme.bold('').length); // padding adjustment for ansi bold
     const agentStr = session.agent.substring(0, 10).padEnd(12);
     const timeStr = getRelativeTime(session.createdAt).padEnd(14);
-    const commitsStr = String(session.commits.length).padEnd(9);
-    const intentStr = primaryIntent.length > 30 ? primaryIntent.substring(0, 27) + '...' : primaryIntent;
+    const commitsStr = (session.commits.length > 0 ? theme.highlight(String(session.commits.length)) : '0').padEnd(9 + (session.commits.length > 0 ? theme.highlight('').length : 0));
+    const intentStr = theme.dim(primaryIntent.length > 30 ? primaryIntent.substring(0, 27) + '...' : primaryIntent);
 
-    console.log(`${idStr}${agentStr}${timeStr}${commitsStr}${intentStr}`);
+    // Let's print each row using styled strings
+    console.log(
+      session.id.padEnd(45) + 
+      session.agent.substring(0, 10).padEnd(12) + 
+      getRelativeTime(session.createdAt).padEnd(14) + 
+      (session.commits.length > 0 ? theme.highlight(String(session.commits.length)) : '0').padEnd(9 + (session.commits.length > 0 ? theme.highlight('').length : 0)) + 
+      theme.dim(primaryIntent.length > 30 ? primaryIntent.substring(0, 27) + '...' : primaryIntent)
+    );
   }
-  console.log('='.repeat(110));
-  console.log(`Total sessions: ${sessions.length}\n`);
+  console.log(theme.dim('='.repeat(110)));
+  console.log(`${theme.bold('Total sessions:')} ${theme.success(String(sessions.length))}\n`);
 }

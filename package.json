@@ -15,7 +15,9 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "test": "tsx tests/run_tests.ts",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "link-dev": "node scripts/link-dev.js",
+    "unlink-dev": "node scripts/unlink-dev.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "minddiff": "^1.1.0",
     "node-pty": "^1.1.0"
   }
 }

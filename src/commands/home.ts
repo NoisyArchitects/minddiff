@@ -1,6 +1,8 @@
 import * as readline from 'node:readline';
 import { executeCommand } from '../cli.js';
 import { getAllSessions, SessionMetadata } from '../storage/db.js';
+import { agentPlugins, isCommandInstalled } from '../runtime/agent.js';
+import { theme } from '../utils/theme.js';
 
 interface DashboardState {
   activeTab: 'commands' | 'tutorials' | 'help' | 'about';
@@ -44,6 +46,23 @@ const COMMAND_LIST = [
   { name: 'sync', desc: 'Synchronize sessions with Git' }
 ];
 
+function getAgentOptions() {
+  const options: { label: string; id: string; command: string; isInstalled: boolean }[] = [];
+  const installed = agentPlugins.filter(p => isCommandInstalled(p.command));
+  const available = agentPlugins.filter(p => !isCommandInstalled(p.command));
+
+  installed.forEach(p => {
+    options.push({ label: `✓ ${p.name}`, id: p.id, command: p.command, isInstalled: true });
+  });
+
+  available.forEach(p => {
+    options.push({ label: `○ ${p.name} (not installed)`, id: p.id, command: p.command, isInstalled: false });
+  });
+
+  options.push({ label: '[custom command]', id: 'custom', command: '', isInstalled: true });
+  return options;
+}
+
 function cleanAndExit(command?: string, args?: string[]) {
   // Clear screen
   process.stdout.write('\u001b[H\u001b[J');
@@ -54,7 +73,7 @@ function cleanAndExit(command?: string, args?: string[]) {
 
   if (command) {
     executeCommand(command, args || []).catch((err) => {
-      console.error('MindDiff execution failed:', err);
+      console.error(theme.warning(`MindDiff execution failed: ${err.message}`));
       process.exit(1);
     });
   } else {
@@ -64,97 +83,107 @@ function cleanAndExit(command?: string, args?: string[]) {
 
 function render() {
   let output = '';
-  output += '\n  \x1b[1mMindDiff\x1b[0m\n\n';
+  output += `\n  ${theme.bold(theme.accent('MindDiff'))}\n\n`;
 
   // Render Tabs
   const tabHeaders = TABS.map(tab => {
     const isSelected = tab === state.activeTab;
     const displayName = tab.charAt(0).toUpperCase() + tab.slice(1);
-    return isSelected ? `\x1b[1m\x1b[36m[ ${displayName} ]\x1b[0m` : `  ${displayName}  `;
+    return isSelected ? theme.bold(theme.highlight(`[ ${displayName} ]`)) : `  ${displayName}  `;
   }).join(' ');
   
   output += `  ${tabHeaders}\n`;
-  output += '  ' + '─'.repeat(56) + '\n\n';
+  output += '  ' + theme.dim('─'.repeat(56)) + '\n\n';
 
   // Render Content
   if (state.activeTab === 'commands') {
     if (state.promptState === 'none') {
-      output += '  \x1b[1mCommands\x1b[0m\n\n';
+      output += `  ${theme.bold('Commands')}\n\n`;
       COMMAND_LIST.forEach((cmd, idx) => {
         const isSelected = idx === state.cursorY;
-        const pointer = isSelected ? ' \x1b[36m➔\x1b[0m ' : '   ';
-        const cmdStr = isSelected ? `\x1b[1m\x1b[36m${cmd.name.padEnd(10)}\x1b[0m` : cmd.name.padEnd(10);
-        const descStr = isSelected ? `\x1b[1m${cmd.desc}\x1b[0m` : `\x1b[2m${cmd.desc}\x1b[0m`;
+        const pointer = isSelected ? theme.highlight(' ➔ ') : '   ';
+        const cmdStr = isSelected ? theme.bold(theme.accent(cmd.name.padEnd(10))) : cmd.name.padEnd(10);
+        const descStr = isSelected ? theme.bold(cmd.desc) : theme.dim(cmd.desc);
         output += `${pointer} ${cmdStr}  ${descStr}\n`;
       });
     } else if (state.promptState === 'select_agent') {
-      output += '  \x1b[1mSelect Agent to Run\x1b[0m\n\n';
-      const agents = ['gemini', 'claude', 'aider', '[custom command]'];
-      agents.forEach((agent, idx) => {
+      output += `  ${theme.bold('Select Agent to Run')}\n\n`;
+      const agentOptions = getAgentOptions();
+      agentOptions.forEach((opt, idx) => {
         const isSelected = idx === state.agentCursor;
-        const pointer = isSelected ? ' \x1b[36m➔\x1b[0m ' : '   ';
-        output += `${pointer} ${isSelected ? `\x1b[1m\x1b[36m${agent}\x1b[0m` : agent}\n`;
+        const pointer = isSelected ? theme.highlight(' ➔ ') : '   ';
+        let labelText = opt.label;
+        if (opt.id !== 'custom') {
+          if (opt.isInstalled) {
+            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.success(opt.label);
+          } else {
+            labelText = isSelected ? theme.bold(theme.accent(opt.label)) : theme.dim(opt.label);
+          }
+        } else {
+          labelText = isSelected ? theme.bold(theme.accent(opt.label)) : opt.label;
+        }
+        output += `${pointer} ${labelText}\n`;
       });
     } else if (state.promptState === 'select_session') {
-      output += `  \x1b[1mSelect Session to ${state.targetCommand === 'view' ? 'View' : 'Log'}\x1b[0m\n\n`;
+      output += `  ${theme.bold(`Select Session to ${state.targetCommand === 'view' ? 'View' : 'Log'}`)}\n\n`;
       if (state.sessions.length === 0) {
-        output += '   \x1b[2mNo sessions found on disk.\x1b[0m\n';
+        output += `   ${theme.dim('No sessions found on disk.')}\n`;
       } else {
         state.sessions.forEach((sess, idx) => {
           const isSelected = idx === state.sessionCursor;
-          const pointer = isSelected ? ' \x1b[36m➔\x1b[0m ' : '   ';
+          const pointer = isSelected ? theme.highlight(' ➔ ') : '   ';
           const dateStr = new Date(sess.createdAt).toLocaleDateString();
           const info = `${sess.id.padEnd(40)} (Agent: ${sess.agent}) - ${dateStr}`;
-          output += `${pointer} ${isSelected ? `\x1b[1m\x1b[36m${info}\x1b[0m` : `\x1b[2m${info}\x1b[0m`}\n`;
+          output += `${pointer} ${isSelected ? theme.bold(theme.accent(info)) : theme.dim(info)}\n`;
         });
       }
     } else if (state.promptState === 'input_sha') {
-      output += '  \x1b[1mExplain Commit\x1b[0m\n\n';
-      output += `   Enter Git Commit SHA: \x1b[36m${state.inputText}\x1b[0m\x1b[5m_\x1b[0m\n`;
+      output += `  ${theme.bold('Explain Commit')}\n\n`;
+      output += `   Enter Git Commit SHA: ${theme.highlight(state.inputText)}${theme.bold('_')}\n`;
     } else if (state.promptState === 'input_tag') {
-      output += '  \x1b[1mFilter Memories by Tag\x1b[0m\n\n';
-      output += `   Enter tag name (optional, press Enter for all): \x1b[36m${state.inputText}\x1b[0m\x1b[5m_\x1b[0m\n`;
+      output += `  ${theme.bold('Filter Memories by Tag')}\n\n`;
+      output += `   Enter tag name (optional, press Enter for all): ${theme.highlight(state.inputText)}${theme.bold('_')}\n`;
     } else if (state.promptState === 'input_custom_agent') {
-      output += '  \x1b[1mCustom CLI Command\x1b[0m\n\n';
-      output += `   Enter command to run under capture: \x1b[36m${state.inputText}\x1b[0m\x1b[5m_\x1b[0m\n`;
+      output += `  ${theme.bold('Custom CLI Command')}\n\n`;
+      output += `   Enter command to run under capture: ${theme.highlight(state.inputText)}${theme.bold('_')}\n`;
     }
   } else if (state.activeTab === 'tutorials') {
-    output += '  \x1b[1mGetting Started with MindDiff\x1b[0m\n\n';
-    output += '  \x1b[1m1. Start Capturing Work\x1b[0m\n';
-    output += '     Run `minddiff run gemini` (or another agent/tool).\n';
+    output += `  ${theme.bold('Getting Started with MindDiff')}\n\n`;
+    output += `  ${theme.bold('1. Start Capturing Work')}\n`;
+    output += `     Run \`${theme.highlight('minddiff run gemini')}\` (or another agent/tool).\n`;
     output += '     MindDiff wraps the PTY to record terminal execution and intents.\n\n';
-    output += '  \x1b[1m2. Save Code Changes\x1b[0m\n';
-    output += '     Use standard git workflow (`git add` and `git commit`).\n';
+    output += `  ${theme.bold('2. Save Code Changes')}\n`;
+    output += `     Use standard git workflow (\`git add\` and \`git commit\`).\n`;
     output += '     The post-commit hook automatically links commits to your session.\n\n';
-    output += '  \x1b[1m3. Explain commits\x1b[0m\n';
-    output += '     Run `minddiff commit <sha>` to view the cognitive context,\n';
+    output += `  ${theme.bold('3. Explain Commits')}\n`;
+    output += `     Run \`${theme.highlight('minddiff commit <sha>')}\` to view the cognitive context,\n`;
     output += '     goals, and debugging thoughts that produced that commit.\n';
   } else if (state.activeTab === 'help') {
-    output += '  \x1b[1mMindDiff Documentation & Help\x1b[0m\n\n';
-    output += '  \x1b[1mDirect CLI Syntax Cheat Sheet:\x1b[0m\n';
-    output += '    $ minddiff run <agent>      Capture a new session\n';
-    output += '    $ minddiff view <session>   View a session\'s narrative story\n';
-    output += '    $ minddiff commit <sha>     Explain why a Git commit happened\n';
-    output += '    $ minddiff history          List previous sessions\n';
-    output += '    $ minddiff memories         Browse tag filter timelines\n\n';
-    output += '  \x1b[1mCommand Manuals:\x1b[0m\n';
+    output += `  ${theme.bold('MindDiff Documentation & Help')}\n\n`;
+    output += `  ${theme.bold('Direct CLI Syntax Cheat Sheet:')}\n`;
+    output += `    $ ${theme.highlight('minddiff run <agent>')}      Capture a new session\n`;
+    output += `    $ ${theme.highlight('minddiff view <session>')}   View a session's narrative story\n`;
+    output += `    $ ${theme.highlight('minddiff commit <sha>')}     Explain why a Git commit happened\n`;
+    output += `    $ ${theme.highlight('minddiff history')}          List previous sessions\n`;
+    output += `    $ ${theme.highlight('minddiff memories')}         Browse tag filter timelines\n\n`;
+    output += `  ${theme.bold('Command Manuals:')}\n`;
     output += '    To inspect a detailed reference of any command directly,\n';
     output += '    exit this launcher and execute:\n';
-    output += '      \x1b[36m$ minddiff help <command-name>\x1b[0m\n';
+    output += `      ${theme.highlight('$ minddiff help <command-name>')}\n`;
   } else if (state.activeTab === 'about') {
-    output += '  \x1b[1mMindDiff\x1b[0m\n\n';
+    output += `  ${theme.bold('MindDiff')}\n\n`;
     output += '  Preserving developer continuity alongside repository evolution.\n';
     output += '  MindDiff models thoughts, tool calls, and actions as Semantic Episodes\n';
     output += '  to explain the "Why" behind code commits.\n\n';
-    output += '  \x1b[2mVersion:      1.0.1-alpha.2\x1b[0m\n';
-    output += '  \x1b[2mLicense:      MIT\x1b[0m\n';
+    output += `  ${theme.dim('Version:      1.1.0')}\n`;
+    output += `  ${theme.dim('License:      MIT')}\n`;
   }
 
-  output += '\n  ' + '─'.repeat(56) + '\n';
+  output += '\n  ' + theme.dim('─'.repeat(56)) + '\n';
   if (state.promptState !== 'none') {
-    output += '  \x1b[2mEnter Select / Submit  ·  Esc Cancel / Go Back\x1b[0m\n';
+    output += `  ${theme.dim('Enter Select / Submit  ·  Esc Cancel / Go Back')}\n`;
   } else {
-    output += '  \x1b[2m↑↓ Navigate  ·  ←→ Switch Tabs  ·  Enter Select  ·  Esc Exit\x1b[0m\n';
+    output += `  ${theme.dim('↑↓ Navigate  ·  ←→ Switch Tabs  ·  Enter Select  ·  Esc Exit')}\n`;
   }
 
   process.stdout.write('\u001b[H\u001b[J' + output);
@@ -206,7 +235,7 @@ function handleInput(key: any) {
 
   // 2. Select Prompts Keypress Handling
   if (state.promptState === 'select_agent') {
-    const agents = ['gemini', 'claude', 'aider', '[custom command]'];
+    const agentOptions = getAgentOptions();
     if (key.name === 'escape') {
       state.promptState = 'none';
       render();
@@ -218,17 +247,17 @@ function handleInput(key: any) {
       return;
     }
     if (key.name === 'down') {
-      state.agentCursor = Math.min(agents.length - 1, state.agentCursor + 1);
+      state.agentCursor = Math.min(agentOptions.length - 1, state.agentCursor + 1);
       render();
       return;
     }
     if (key.name === 'return' || key.name === 'enter') {
-      const choice = agents[state.agentCursor];
-      if (choice === '[custom command]') {
+      const choice = agentOptions[state.agentCursor];
+      if (choice.id === 'custom') {
         state.promptState = 'input_custom_agent';
         state.inputText = '';
       } else {
-        cleanAndExit('run', [choice]);
+        cleanAndExit('run', [choice.id]);
       }
       return;
     }
